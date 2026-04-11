@@ -11,6 +11,16 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
+## Code Quality
+
+```bash
+npm run lint           # ESLint
+npm run format         # Prettier (auto-fix)
+npm run format:check   # Prettier (check only)
+```
+
+CI runs lint, format check, and build on every push/PR to `main`.
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/) (App Router) + TypeScript
