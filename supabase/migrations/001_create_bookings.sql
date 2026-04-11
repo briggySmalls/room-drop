@@ -32,5 +32,4 @@ create table app_config (
   notification_email text not null
 );
 
--- Seed a default config row
-insert into app_config (notification_email) values ('changeme@example.com');
+-- Default config row seeded via supabase/seed.sql

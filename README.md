@@ -11,13 +11,15 @@ npm run dev      # Start dev server at localhost:3000
 
 Prerequisites: Node.js >= 20, Docker (running), Supabase CLI.
 
-### Database Migrations
+### Database
 
-Migrations live in `supabase/migrations/` and are applied automatically by `npm run setup`. To apply manually:
+Migrations live in `supabase/migrations/` and are applied automatically by `npm run setup`. To reset the database and reload seed data:
 
 ```bash
-supabase db push
+npm run db:reset
 ```
+
+Sample bookings are seeded from `supabase/seed.sql` — edit this file to change your local dev data.
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
