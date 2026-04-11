@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "@/lib/env";
+import { RoomVerdict } from "@/lib/types";
 
 export interface RoomComparison {
-  verdict: "match" | "upgrade" | "downgrade";
+  verdict: RoomVerdict;
   confidence: number;
   reasoning: string;
 }

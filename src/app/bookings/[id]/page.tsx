@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Booking } from "@/lib/types";
+import { Booking, FilterMode, RoomVerdict } from "@/lib/types";
 
 interface ScanResult {
   id: string;
   scanned_at: string;
-  filter_mode: string;
+  filter_mode: FilterMode;
   best_price: number | null;
   best_source: string | null;
   best_room_desc: string | null;
-  llm_verdict: string | null;
+  llm_verdict: RoomVerdict | null;
   llm_confidence: number | null;
   savings_amount: number | null;
   savings_percent: number | null;

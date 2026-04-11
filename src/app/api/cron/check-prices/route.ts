@@ -5,7 +5,7 @@ import { searchHotelPrices } from "@/lib/scraper";
 import { compareRooms } from "@/lib/llm";
 import { sendEmail } from "@/lib/email";
 import { buildDealFoundEmail } from "@/emails/deal-found";
-import { Booking } from "@/lib/types";
+import { Booking, FilterMode, RoomVerdict } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   if (env.cronSecret) {
@@ -64,7 +64,7 @@ async function processBooking(
       (1000 * 60 * 60 * 24),
   );
 
-  const filterMode =
+  const filterMode: FilterMode =
     daysUntilCancellation <= booking.timeline_shift_days
       ? "all_rates"
       : "refundable_only";
@@ -258,7 +258,7 @@ async function sendAlertEmail(
 
 function shouldAlert(
   booking: Booking,
-  verdict: string,
+  verdict: RoomVerdict,
   savingsAmount: number,
   savingsPercent: number,
 ): boolean {

@@ -1,3 +1,16 @@
+export type BookingStatus = "active" | "expired";
+
+export type FilterMode = "refundable_only" | "all_rates";
+
+export type RoomVerdict = "match" | "upgrade" | "downgrade";
+
+export type ScanStatus =
+  | "no_property_found"
+  | "no_rates_parsed"
+  | "no_eligible_rates"
+  | "no_cheaper_rates"
+  | "deal_found";
+
 export interface Booking {
   id: string;
   hotel_name: string;
@@ -15,7 +28,7 @@ export interface Booking {
   threshold_percent: number | null;
   threshold_absolute: number | null;
   timeline_shift_days: number;
-  status: string;
+  status: BookingStatus;
   created_at: string;
   updated_at: string;
 }
