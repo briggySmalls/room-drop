@@ -21,7 +21,12 @@ npm install
 npm run dev        # Start dev server at localhost:3000
 npm run build      # Production build
 npm run lint       # ESLint
+npm run format     # Prettier (auto-fix)
 ```
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to `main`: install → lint → format check → build.
 
 ## Project Structure
 
