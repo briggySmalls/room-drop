@@ -27,9 +27,9 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 
 ### Supabase
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| Variable                        | Description                        |
+| ------------------------------- | ---------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL          |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous/public key |
 
 For local development, `npm run setup` starts a local Supabase instance. The default values are:
@@ -43,30 +43,45 @@ For production, create a project at [supabase.com](https://supabase.com) and cop
 
 ### SerpAPI (Google Hotels)
 
-| Variable | Description |
-|---|---|
+| Variable      | Description          |
+| ------------- | -------------------- |
 | `SERPAPI_KEY` | Your SerpAPI API key |
 
 Sign up at [serpapi.com](https://serpapi.com). Your API key is on the [dashboard](https://serpapi.com/dashboard) after sign-in.
 
 ### Anthropic (room matching)
 
-| Variable | Description |
-|---|---|
+| Variable            | Description            |
+| ------------------- | ---------------------- |
 | `ANTHROPIC_API_KEY` | Your Anthropic API key |
 
 Create an API key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys). The app uses Claude Haiku 4.5 for room comparison.
 
 ### Vercel Cron
 
-| Variable | Description |
-|---|---|
+| Variable      | Description                                |
+| ------------- | ------------------------------------------ |
 | `CRON_SECRET` | Secret token to authenticate cron requests |
 
 Generate any random string (e.g. `openssl rand -hex 32`). On Vercel, this is set automatically via the Cron integration. Locally, trigger the cron endpoint with:
 
 ```bash
 npm run cron
+```
+
+### Resend (email alerts)
+
+| Variable            | Description                   |
+| ------------------- | ----------------------------- |
+| `RESEND_API_KEY`    | Your Resend API key           |
+| `RESEND_FROM_EMAIL` | Verified sender email address |
+
+Sign up at [resend.com](https://resend.com). Create an API key under **API Keys** in the dashboard. To send from a custom address, verify a domain under **Domains** — or use `onboarding@resend.dev` for testing.
+
+Set the recipient email for alerts:
+
+```bash
+npm run set-email -- you@example.com
 ```
 
 ## Code Quality

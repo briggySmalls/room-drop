@@ -3,6 +3,8 @@ import { getSupabase } from "@/lib/db";
 import { env } from "@/lib/env";
 import { searchHotelPrices } from "@/lib/scraper";
 import { compareRooms } from "@/lib/llm";
+import { sendEmail } from "@/lib/email";
+import { buildDealFoundEmail } from "@/emails/deal-found";
 import { Booking } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -136,6 +138,28 @@ async function processBooking(
     savingsPercent,
   );
 
+  // Check for dedup: same booking + source within 24 hours
+  let emailSent = false;
+  if (alertTriggered) {
+    const twentyFourHoursAgo = new Date(
+      Date.now() - 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const { data: recentAlerts } = await supabase
+      .from("alerts_sent")
+      .select("id")
+      .eq("booking_id", booking.id)
+      .eq("source", bestRate.source)
+      .gte("sent_at", twentyFourHoursAgo);
+
+    if (!recentAlerts || recentAlerts.length === 0) {
+      emailSent = true;
+    }
+  }
+
+  // Determine final alert_triggered (must pass both threshold and dedup)
+  const finalAlertTriggered = alertTriggered && emailSent;
+
   const { data: scanResult } = await supabase
     .from("scan_results")
     .insert({
@@ -152,17 +176,84 @@ async function processBooking(
       llm_reasoning: comparison.reasoning,
       savings_amount: savingsAmount,
       savings_percent: Math.round(savingsPercent * 100) / 100,
-      alert_triggered: alertTriggered,
+      alert_triggered: finalAlertTriggered,
     })
     .select()
     .single();
 
+  if (finalAlertTriggered && scanResult) {
+    await sendAlertEmail(supabase, booking, scanResult, bestRate, comparison, {
+      savingsAmount,
+      savingsPercent: Math.round(savingsPercent * 100) / 100,
+    });
+  }
+
   return {
     booking_id: booking.id,
     deal_found: true,
-    alert_triggered: alertTriggered,
+    alert_triggered: finalAlertTriggered,
     scan_result_id: scanResult?.id,
   };
+}
+
+async function sendAlertEmail(
+  supabase: ReturnType<typeof getSupabase>,
+  booking: Booking,
+  scanResult: { id: string },
+  bestRate: {
+    price: number;
+    source: string;
+    room_description: string;
+    link: string | null;
+    free_cancellation: boolean;
+  },
+  comparison: { reasoning: string },
+  savings: { savingsAmount: number; savingsPercent: number },
+) {
+  const { data: config } = await supabase
+    .from("app_config")
+    .select("notification_email")
+    .single();
+
+  if (!config?.notification_email) {
+    console.error("No notification email configured in app_config");
+    return;
+  }
+
+  const { subject, html } = buildDealFoundEmail({
+    hotelName: booking.hotel_name,
+    checkIn: booking.check_in_date,
+    checkOut: booking.check_out_date,
+    originalPrice: Number(booking.current_price),
+    newPrice: bestRate.price,
+    currency: booking.currency,
+    savingsAmount: savings.savingsAmount,
+    savingsPercent: savings.savingsPercent,
+    source: bestRate.source,
+    roomDescription: bestRate.room_description,
+    bookingLink: bestRate.link,
+    llmReasoning: comparison.reasoning,
+    cancellationDate: booking.cancellation_date,
+    cancellationUrl: booking.cancellation_url,
+    originalBookingSource: booking.original_booking_source,
+    isRefundable: bestRate.free_cancellation,
+  });
+
+  const { id: resendId } = await sendEmail({
+    to: config.notification_email,
+    subject,
+    html,
+  });
+
+  await supabase.from("alerts_sent").insert({
+    booking_id: booking.id,
+    scan_result_id: scanResult.id,
+    recipient_email: config.notification_email,
+    source: bestRate.source,
+    savings_amount: savings.savingsAmount,
+    savings_percent: savings.savingsPercent,
+    resend_id: resendId,
+  });
 }
 
 function shouldAlert(

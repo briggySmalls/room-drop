@@ -17,6 +17,7 @@ const hotelDetailsRitz = loadFixture("serpapi/hotel-details-ritz.json");
 const hotelDetailsNoDeals = loadFixture("serpapi/hotel-details-no-deals.json");
 const roomMatch = loadFixture("anthropic/room-match.json");
 const roomDowngrade = loadFixture("anthropic/room-downgrade.json");
+const sendSuccess = loadFixture("resend/send-success.json");
 
 const handlers = [
   http.get("https://serpapi.com/search", ({ request }) => {
@@ -44,6 +45,10 @@ const handlers = [
       return HttpResponse.json(roomDowngrade);
     }
     return HttpResponse.json(roomMatch);
+  }),
+
+  http.post("https://api.resend.com/emails", () => {
+    return HttpResponse.json(sendSuccess);
   }),
 ];
 

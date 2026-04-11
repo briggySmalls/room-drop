@@ -15,6 +15,8 @@ export function validateEnv() {
   required("NEXT_PUBLIC_SUPABASE_ANON_KEY");
   required("SERPAPI_KEY");
   required("ANTHROPIC_API_KEY");
+  required("RESEND_API_KEY");
+  required("RESEND_FROM_EMAIL");
 }
 
 export const env = {
@@ -29,6 +31,12 @@ export const env = {
   },
   get anthropicApiKey() {
     return required("ANTHROPIC_API_KEY");
+  },
+  get resendApiKey() {
+    return required("RESEND_API_KEY");
+  },
+  get resendFromEmail() {
+    return required("RESEND_FROM_EMAIL");
   },
   get cronSecret() {
     return optional("CRON_SECRET");

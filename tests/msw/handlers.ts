@@ -6,6 +6,7 @@ import hotelDetailsNoDeals from "../fixtures/serpapi/hotel-details-no-deals.json
 import roomMatch from "../fixtures/anthropic/room-match.json";
 import roomDowngrade from "../fixtures/anthropic/room-downgrade.json";
 import roomLowConfidence from "../fixtures/anthropic/room-low-confidence.json";
+import sendSuccess from "../fixtures/resend/send-success.json";
 
 export const handlers: RequestHandler[] = [
   // SerpAPI — routes based on whether property_token is present (details vs search)
@@ -49,5 +50,10 @@ export const handlers: RequestHandler[] = [
     }
 
     return HttpResponse.json(roomMatch);
+  }),
+
+  // Resend API — always returns success
+  http.post("https://api.resend.com/emails", () => {
+    return HttpResponse.json(sendSuccess);
   }),
 ];
