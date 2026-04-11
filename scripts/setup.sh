@@ -44,7 +44,14 @@ if command -v docker &>/dev/null; then
     fail "Docker installed but not running — start Docker Desktop"
   fi
 else
-  fail "Docker not found"
+  fail "Docker not found (required for local Supabase)"
+fi
+
+# Supabase CLI
+if command -v supabase &>/dev/null; then
+  ok "Supabase CLI $(supabase --version 2>&1 | head -1)"
+else
+  fail "Supabase CLI not found — install: brew install supabase/tap/supabase"
 fi
 
 echo ""
@@ -67,6 +74,16 @@ if [ ! -f .env.local ]; then
   cp .env.example .env.local
   echo "  Edit .env.local with your keys before running the app."
 fi
+
+# Start local Supabase
+echo ""
+echo "Starting local Supabase..."
+supabase start
+
+# Apply migrations
+echo ""
+echo "Applying database migrations..."
+supabase db push
 
 echo ""
 echo -e "${GREEN}Setup complete.${NC} Run 'npm run dev' to start the app."

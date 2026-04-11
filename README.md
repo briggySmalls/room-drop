@@ -5,13 +5,41 @@ Monitor hotel prices after booking and get alerted when a cheaper equivalent roo
 ## Getting Started
 
 ```bash
-npm run setup    # Check prerequisites and install deps
+npm run setup    # Check prerequisites, install deps, start local Supabase
 npm run dev      # Start dev server at localhost:3000
 ```
 
-Prerequisites: Node.js >= 20, Docker (running).
+Prerequisites: Node.js >= 20, Docker (running), Supabase CLI.
+
+### Database Migrations
+
+Migrations live in `supabase/migrations/` and are applied automatically by `npm run setup`. To apply manually:
+
+```bash
+supabase db push
+```
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in the values below.
+
+### Supabase
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous/public key |
+
+For local development, `npm run setup` starts a local Supabase instance. The default values are:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<printed by supabase start>
+```
+
+For production, create a project at [supabase.com](https://supabase.com) and copy the URL and anon key from **Settings → API**.
 
 ## Code Quality
 
