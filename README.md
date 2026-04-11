@@ -2,12 +2,14 @@
 
 Monitor hotel prices after booking and get alerted when a cheaper equivalent room becomes available — before your free cancellation deadline passes.
 
-## Local Development
+## Getting Started
 
 ```bash
-npm install
-npm run dev
+npm run setup    # Check prerequisites and install deps
+npm run dev      # Start dev server at localhost:3000
 ```
+
+Prerequisites: Node.js >= 20, Docker (running).
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
