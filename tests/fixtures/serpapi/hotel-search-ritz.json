@@ -1,0 +1,13 @@
+{
+  "search_metadata": { "status": "Success" },
+  "properties": [
+    {
+      "name": "The Ritz London",
+      "property_token": "test-ritz-token",
+      "total_rate": {
+        "lowest": "£1,000",
+        "extracted_lowest": 1000
+      }
+    }
+  ]
+}

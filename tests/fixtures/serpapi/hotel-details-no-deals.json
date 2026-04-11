@@ -1,0 +1,24 @@
+{
+  "search_metadata": { "status": "Success" },
+  "name": "No-Deals-Hotel",
+  "prices": [
+    {
+      "source": "Booking.com",
+      "link": "https://www.booking.com/hotel/gb/no-deals-hotel.html",
+      "rooms": [
+        {
+          "name": "Standard Room",
+          "link": "https://www.booking.com/hotel/gb/no-deals-hotel.html",
+          "total_rate": {
+            "lowest": "£1,300",
+            "extracted_lowest": 1300
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£1,300",
+        "extracted_lowest": 1300
+      }
+    }
+  ]
+}

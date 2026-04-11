@@ -23,6 +23,7 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       NODE_ENV: "test",
+      NODE_OPTIONS: "--import ./scripts/msw-preload.mjs",
     },
   },
 });

@@ -41,6 +41,34 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<printed by supabase start>
 
 For production, create a project at [supabase.com](https://supabase.com) and copy the URL and anon key from **Settings → API**.
 
+### SerpAPI (Google Hotels)
+
+| Variable | Description |
+|---|---|
+| `SERPAPI_KEY` | Your SerpAPI API key |
+
+Sign up at [serpapi.com](https://serpapi.com). Your API key is on the [dashboard](https://serpapi.com/dashboard) after sign-in.
+
+### Anthropic (room matching)
+
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Your Anthropic API key |
+
+Create an API key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys). The app uses Claude Haiku 4.5 for room comparison.
+
+### Vercel Cron
+
+| Variable | Description |
+|---|---|
+| `CRON_SECRET` | Secret token to authenticate cron requests |
+
+Generate any random string (e.g. `openssl rand -hex 32`). On Vercel, this is set automatically via the Cron integration. Locally, trigger the cron endpoint with:
+
+```bash
+npm run cron
+```
+
 ## Code Quality
 
 ```bash

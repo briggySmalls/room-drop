@@ -1,3 +1,4 @@
+import globals from "globals";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -12,6 +13,15 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+    },
+  },
+  {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: globals.nodeBuiltin,
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
   prettier,

@@ -1,0 +1,60 @@
+{
+  "search_metadata": { "status": "Success" },
+  "name": "The Ritz London",
+  "prices": [
+    {
+      "source": "Booking.com",
+      "link": "https://www.booking.com/hotel/gb/the-ritz-london.html",
+      "rooms": [
+        {
+          "name": "Deluxe King Room",
+          "link": "https://www.booking.com/hotel/gb/the-ritz-london.html",
+          "total_rate": {
+            "lowest": "£1,000",
+            "extracted_lowest": 1000
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£1,000",
+        "extracted_lowest": 1000
+      }
+    },
+    {
+      "source": "Hotels.com",
+      "link": "https://www.hotels.com/the-ritz-london",
+      "rooms": [
+        {
+          "name": "Standard Twin Room - Non-Refundable",
+          "link": "https://www.hotels.com/the-ritz-london",
+          "total_rate": {
+            "lowest": "£900",
+            "extracted_lowest": 900
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£900",
+        "extracted_lowest": 900
+      }
+    },
+    {
+      "source": "Expedia",
+      "link": "https://www.expedia.com/the-ritz-london",
+      "rooms": [
+        {
+          "name": "Superior King Room",
+          "link": "https://www.expedia.com/the-ritz-london",
+          "total_rate": {
+            "lowest": "£1,100",
+            "extracted_lowest": 1100
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£1,100",
+        "extracted_lowest": 1100
+      }
+    }
+  ]
+}

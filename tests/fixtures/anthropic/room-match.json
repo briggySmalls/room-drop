@@ -1,0 +1,14 @@
+{
+  "id": "msg_test_match",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"verdict\": \"match\", \"confidence\": 0.9, \"reasoning\": \"Both are Deluxe King rooms at The Ritz London. The candidate 'Deluxe King Room' is equivalent to the original 'Deluxe King, City View' — the city view may or may not be included but the base room type matches.\"}"
+    }
+  ],
+  "model": "claude-haiku-4-5-20251001",
+  "stop_reason": "end_turn",
+  "usage": { "input_tokens": 100, "output_tokens": 50 }
+}

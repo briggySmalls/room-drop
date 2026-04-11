@@ -1,0 +1,13 @@
+{
+  "search_metadata": { "status": "Success" },
+  "properties": [
+    {
+      "name": "No-Deals-Hotel",
+      "property_token": "test-no-deals-token",
+      "total_rate": {
+        "lowest": "£1,300",
+        "extracted_lowest": 1300
+      }
+    }
+  ]
+}

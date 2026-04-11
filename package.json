@@ -11,9 +11,11 @@
     "format:check": "prettier --check .",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
+    "cron": "bash scripts/cron.sh",
     "setup": "bash scripts/setup.sh"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.88.0",
     "@supabase/supabase-js": "^2.103.0",
     "next": "^16.2.3",
     "react": "^19.2.5",
@@ -32,6 +34,7 @@
     "postcss": "^8.5.9",
     "prettier": "^3.8.2",
     "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.1"
   }

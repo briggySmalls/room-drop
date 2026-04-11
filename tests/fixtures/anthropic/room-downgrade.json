@@ -1,0 +1,14 @@
+{
+  "id": "msg_test_downgrade",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"verdict\": \"downgrade\", \"confidence\": 0.92, \"reasoning\": \"The candidate 'Standard Twin Room' is a lower tier than the original 'Deluxe King, City View'. It has twin beds instead of king, and is standard rather than deluxe class.\"}"
+    }
+  ],
+  "model": "claude-haiku-4-5-20251001",
+  "stop_reason": "end_turn",
+  "usage": { "input_tokens": 100, "output_tokens": 50 }
+}

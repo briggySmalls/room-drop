@@ -1,0 +1,14 @@
+{
+  "id": "msg_test_low_conf",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"verdict\": \"match\", \"confidence\": 0.4, \"reasoning\": \"The candidate room is simply described as 'Room' with no further details. It may or may not match the original 'Deluxe King, City View' but there is insufficient information to determine this with confidence.\"}"
+    }
+  ],
+  "model": "claude-haiku-4-5-20251001",
+  "stop_reason": "end_turn",
+  "usage": { "input_tokens": 100, "output_tokens": 50 }
+}
