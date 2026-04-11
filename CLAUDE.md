@@ -24,9 +24,18 @@ npm run lint       # ESLint
 npm run format     # Prettier (auto-fix)
 ```
 
+## Testing
+
+```bash
+npx playwright test      # Run all E2E tests
+npx playwright test --ui # Interactive UI
+```
+
+Playwright auto-starts Next.js dev server. MSW intercepts external APIs (SerpAPI, Anthropic, Resend) inside the server process when `NODE_ENV=test` via `src/instrumentation.ts`.
+
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to `main`: install → lint → format check → build.
+GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to `master`: install → lint → format check → build → Playwright tests.
 
 ## Project Structure
 

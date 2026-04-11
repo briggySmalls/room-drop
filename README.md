@@ -19,7 +19,16 @@ npm run format         # Prettier (auto-fix)
 npm run format:check   # Prettier (check only)
 ```
 
-CI runs lint, format check, and build on every push/PR to `main`.
+CI runs lint, format check, build, and Playwright tests on every push/PR to `master`.
+
+## Testing
+
+```bash
+npx playwright test              # Run all tests
+npx playwright test --ui         # Interactive Playwright UI
+```
+
+Playwright starts the Next.js dev server automatically. MSW intercepts external API calls inside the server process when `NODE_ENV=test`.
 
 ## Tech Stack
 

@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,3 +21,22 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: npm ci
+      - run: supabase start -x imgproxy,vector,analytics
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
