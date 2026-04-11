@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { env } from "@/lib/env";
 
 export interface RoomComparison {
   verdict: "match" | "upgrade" | "downgrade";
@@ -23,12 +24,7 @@ export async function compareRooms(
   candidateRoom: string,
   hotelName: string,
 ): Promise<RoomComparison> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error("Missing ANTHROPIC_API_KEY");
-  }
-
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey: env.anthropicApiKey });
 
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",

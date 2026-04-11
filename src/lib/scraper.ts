@@ -1,3 +1,5 @@
+import { env } from "@/lib/env";
+
 export interface HotelRate {
   source: string;
   price: number;
@@ -45,11 +47,6 @@ export async function searchHotelPrices(
   checkOut: string,
   numGuests: number,
 ): Promise<{ rates: HotelRate[]; raw: unknown }> {
-  const apiKey = process.env.SERPAPI_KEY;
-  if (!apiKey) {
-    throw new Error("Missing SERPAPI_KEY");
-  }
-
   // Step 1: Search for the hotel to get its property_token
   const query = location ? `${hotelName} ${location}` : hotelName;
   const searchParams = new URLSearchParams({
@@ -59,7 +56,7 @@ export async function searchHotelPrices(
     check_out_date: checkOut,
     adults: String(numGuests),
     currency: "GBP",
-    api_key: apiKey,
+    api_key: env.serpApiKey,
   });
 
   const searchRes = await fetch(`https://serpapi.com/search?${searchParams}`);
