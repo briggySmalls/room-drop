@@ -15,6 +15,14 @@ export async function GET(request: NextRequest) {
 
   const supabase = getSupabase();
 
+  // Expire bookings past their cancellation date
+  const { data: expired } = await supabase
+    .from("bookings")
+    .update({ status: "expired" })
+    .eq("status", "active")
+    .lt("cancellation_date", new Date().toISOString())
+    .select("id");
+
   // Fetch active bookings with future cancellation dates
   const { data: bookings, error: fetchError } = await supabase
     .from("bookings")
@@ -39,6 +47,7 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({
+    expired: expired?.length ?? 0,
     processed: results.length,
     results,
   });

@@ -67,6 +67,17 @@ async function getScanResults(bookingId?: string) {
   return res.json();
 }
 
+async function getBooking(id: string) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+    },
+  });
+  const data = await res.json();
+  return data[0];
+}
+
 const TEST_BASE_URL = "http://localhost:3001";
 
 async function triggerCron(withAuth = true) {
@@ -214,5 +225,72 @@ test.describe.serial("Intelligent Room Matching", () => {
     const scans = await getScanResults(booking.id);
     expect(scans).toHaveLength(1);
     expect(scans[0].llm_confidence).not.toBeNull();
+  });
+});
+
+test.describe.serial("Booking Expiry and Cleanup", () => {
+  test.beforeEach(async () => {
+    await clearTable("scan_results");
+    await clearTable("bookings");
+  });
+
+  test.afterAll(async () => {
+    await clearTable("scan_results");
+    await clearTable("bookings");
+  });
+
+  test("booking is expired during daily cron run", async () => {
+    const booking = await insertBooking({
+      cancellation_date: "2025-01-01T23:59:00Z",
+    });
+
+    const res = await triggerCron();
+    expect(res.status).toBe(200);
+
+    const updated = await getBooking(booking.id);
+    expect(updated.status).toBe("expired");
+
+    const scans = await getScanResults(booking.id);
+    expect(scans).toHaveLength(0);
+  });
+
+  test("active booking with future cancellation date is not expired", async () => {
+    const booking = await insertBooking({
+      cancellation_date: "2026-06-10T23:59:00Z",
+    });
+
+    await triggerCron();
+
+    const updated = await getBooking(booking.id);
+    expect(updated.status).toBe("active");
+  });
+
+  test("mixed bookings — only past-cancellation ones are expired", async () => {
+    const active = await insertBooking({
+      hotel_name: "The Ritz London",
+      cancellation_date: "2026-06-10T23:59:00Z",
+    });
+    const pastDue = await insertBooking({
+      hotel_name: "Hotel Marylebone",
+      cancellation_date: "2025-03-01T23:59:00Z",
+    });
+
+    const res = await triggerCron();
+    const body = await res.json();
+
+    const updatedActive = await getBooking(active.id);
+    expect(updatedActive.status).toBe("active");
+
+    const updatedPastDue = await getBooking(pastDue.id);
+    expect(updatedPastDue.status).toBe("expired");
+
+    expect(body.expired).toBe(1);
+    expect(body.processed).toBe(1);
+
+    const scans = await getScanResults(active.id);
+    expect(scans).toHaveLength(1);
+
+    const pastDueScans = await getScanResults(pastDue.id);
+    expect(pastDueScans).toHaveLength(0);
   });
 });
