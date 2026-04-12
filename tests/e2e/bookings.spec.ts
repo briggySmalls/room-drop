@@ -70,6 +70,7 @@ test.describe.serial("Booking Ingestion", () => {
   test("successfully create a booking via the form", async ({ page }) => {
     await page.goto("/bookings/new");
 
+    // Step 1: Your Booking
     await page.getByLabel("Hotel Name").fill("The Ritz London");
     await page.getByLabel("Location").fill("London, UK");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
@@ -77,13 +78,15 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Room Type").fill("Deluxe King, City View");
     await page.getByLabel("Number of Guests").fill("2");
     await page.getByLabel("Total Price").fill("1200.00");
-    await page.getByLabel("Currency").clear();
-    await page.getByLabel("Currency").fill("GBP");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 2: Booking Reference
     await page.getByLabel("Booking Source").fill("Booking.com");
     await page.getByLabel("Confirmation Number").fill("BC-9283746");
-    await page.getByLabel("Min Price Drop %").fill("10");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
+    // Step 3: Alert Settings — defaults (10%, 3 days)
     await page.getByRole("button", { name: "Add Booking" }).click();
 
     await expect(page).toHaveURL("/");
@@ -97,13 +100,21 @@ test.describe.serial("Booking Ingestion", () => {
   test("booking requires at least one deal threshold", async ({ page }) => {
     await page.goto("/bookings/new");
 
+    // Step 1: fill required fields
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
     await page.getByLabel("Room Type").fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
+    // Step 2: skip
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 3: switch to Absolute tab to clear default 10% threshold
+    await page.getByRole("tab", { name: "Absolute" }).click();
+    // Both thresholds are now null
     await page.getByRole("button", { name: "Add Booking" }).click();
 
     await expect(page.getByText("threshold")).toBeVisible();
@@ -118,9 +129,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Room Type").fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
-    await page.getByLabel("Min Price Drop %").fill("10");
 
-    await page.getByRole("button", { name: "Add Booking" }).click();
+    // Click Next — should stay on Step 1 with error
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
     await expect(
       page.getByText("Check-out date must be after check-in date"),
@@ -132,18 +143,22 @@ test.describe.serial("Booking Ingestion", () => {
   }) => {
     await page.goto("/bookings/new");
 
-    const field = page.getByLabel("Non-refundable window");
-    await expect(field).toBeVisible();
-    await expect(field).toHaveValue("3");
-
-    // Fill the rest of the form and submit with custom non_refundable_window_days
+    // Step 1
     await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
     await page.getByLabel("Room Type").fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
-    await page.getByLabel("Min Price Drop %").fill("10");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 2: skip
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 3: check NR window default, then modify
+    const field = page.getByLabel("Non-refundable window");
+    await expect(field).toBeVisible();
+    await expect(field).toHaveValue("3");
     await field.clear();
     await field.fill("5");
 
