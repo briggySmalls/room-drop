@@ -2,7 +2,7 @@
 
 -- App config
 insert into app_config (notification_email)
-values ('changeme@example.com')
+values ('briggysmalls90@gmail.com')
 on conflict (id) do update set notification_email = excluded.notification_email;
 
 -- Sample bookings (dates are relative-ish, update as needed)
