@@ -28,4 +28,4 @@ export const bookingSchema = bookingFields
     path: ["threshold_percent"],
   });
 
-export type BookingFormValues = z.infer<typeof bookingFields>;
+export type BookingFormValues = z.input<typeof bookingFields>;

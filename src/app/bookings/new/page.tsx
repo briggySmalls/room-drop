@@ -1,56 +1,49 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { bookingSchema, type BookingFormValues } from "@/lib/schemas/booking";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from "@/components/ui/field";
+
+const toNumber = (v: string) => (v === "" ? undefined : Number(v));
+const toNullableNumber = (v: string) => (v === "" ? null : Number(v));
 
 export default function NewBooking() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      currency: "GBP",
+      num_guests: 2,
+      non_refundable_window_days: 3,
+    },
+  });
 
-    const form = new FormData(e.currentTarget);
-
-    const thresholdPercent = form.get("threshold_percent") as string;
-    const thresholdAbsolute = form.get("threshold_absolute") as string;
-
-    if (!thresholdPercent && !thresholdAbsolute) {
-      setError("At least one deal threshold (% or absolute) is required");
-      setSubmitting(false);
-      return;
-    }
-
-    const checkIn = form.get("check_in_date") as string;
-    const checkOut = form.get("check_out_date") as string;
-    if (checkOut <= checkIn) {
-      setError("Check-out date must be after check-in date");
-      setSubmitting(false);
-      return;
-    }
+  async function onSubmit(data: BookingFormValues) {
+    setServerError(null);
 
     const body = {
-      hotel_name: form.get("hotel_name") as string,
-      hotel_location: (form.get("hotel_location") as string) || null,
-      check_in_date: checkIn,
-      check_out_date: checkOut,
-      room_type: form.get("room_type") as string,
-      num_guests: Number(form.get("num_guests")) || 2,
-      current_price: Number(form.get("current_price")),
-      currency: (form.get("currency") as string) || "GBP",
-      cancellation_date: `${form.get("cancellation_date")}T23:59:00Z`,
-      cancellation_url: (form.get("cancellation_url") as string) || null,
-      original_booking_source:
-        (form.get("original_booking_source") as string) || null,
-      original_confirmation:
-        (form.get("original_confirmation") as string) || null,
-      threshold_percent: thresholdPercent ? Number(thresholdPercent) : null,
-      threshold_absolute: thresholdAbsolute ? Number(thresholdAbsolute) : null,
-      non_refundable_window_days:
-        Number(form.get("non_refundable_window_days")) || undefined,
+      ...data,
+      hotel_location: data.hotel_location || null,
+      cancellation_url: data.cancellation_url || null,
+      original_booking_source: data.original_booking_source || null,
+      original_confirmation: data.original_confirmation || null,
+      cancellation_date: `${data.cancellation_date}T23:59:00Z`,
     };
 
     const res = await fetch("/api/bookings", {
@@ -60,9 +53,12 @@ export default function NewBooking() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      setError(data.errors?.join(", ") || data.error || "Something went wrong");
-      setSubmitting(false);
+      const responseData = await res.json();
+      setServerError(
+        responseData.errors?.join(", ") ||
+          responseData.error ||
+          "Something went wrong",
+      );
       return;
     }
 
@@ -73,130 +69,196 @@ export default function NewBooking() {
     <main className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold">Add Booking</h1>
 
-      {error && (
+      {serverError && (
         <div
           role="alert"
-          className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700"
+          className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
         >
-          {error}
+          {serverError}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Field label="Hotel Name" name="hotel_name" required />
-        <Field label="Location" name="hotel_location" />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Field data-invalid={errors.hotel_name ? true : undefined}>
+          <FieldLabel htmlFor="hotel_name">Hotel Name</FieldLabel>
+          <Input id="hotel_name" {...register("hotel_name")} />
+          {errors.hotel_name && (
+            <FieldError>{errors.hotel_name.message}</FieldError>
+          )}
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="hotel_location">Location</FieldLabel>
+          <Input id="hotel_location" {...register("hotel_location")} />
+        </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field
-            label="Check-in Date"
-            name="check_in_date"
-            type="date"
-            required
-          />
-          <Field
-            label="Check-out Date"
-            name="check_out_date"
-            type="date"
-            required
-          />
+          <Field data-invalid={errors.check_in_date ? true : undefined}>
+            <FieldLabel htmlFor="check_in_date">Check-in Date</FieldLabel>
+            <Input
+              id="check_in_date"
+              type="date"
+              {...register("check_in_date")}
+            />
+            {errors.check_in_date && (
+              <FieldError>{errors.check_in_date.message}</FieldError>
+            )}
+          </Field>
+          <Field data-invalid={errors.check_out_date ? true : undefined}>
+            <FieldLabel htmlFor="check_out_date">Check-out Date</FieldLabel>
+            <Input
+              id="check_out_date"
+              type="date"
+              {...register("check_out_date")}
+            />
+            {errors.check_out_date && (
+              <FieldError>{errors.check_out_date.message}</FieldError>
+            )}
+          </Field>
         </div>
 
-        <Field label="Room Type" name="room_type" required />
+        <Field data-invalid={errors.room_type ? true : undefined}>
+          <FieldLabel htmlFor="room_type">Room Type</FieldLabel>
+          <Input id="room_type" {...register("room_type")} />
+          {errors.room_type && (
+            <FieldError>{errors.room_type.message}</FieldError>
+          )}
+        </Field>
 
         <div className="grid grid-cols-3 gap-4">
-          <Field
-            label="Number of Guests"
-            name="num_guests"
-            type="number"
-            defaultValue="2"
-          />
-          <Field
-            label="Total Price"
-            name="current_price"
-            type="number"
-            step="0.01"
-            required
-          />
-          <Field label="Currency" name="currency" defaultValue="GBP" />
+          <Field data-invalid={errors.num_guests ? true : undefined}>
+            <FieldLabel htmlFor="num_guests">Number of Guests</FieldLabel>
+            <Input
+              id="num_guests"
+              type="number"
+              {...register("num_guests", { setValueAs: toNumber })}
+            />
+            {errors.num_guests && (
+              <FieldError>{errors.num_guests.message}</FieldError>
+            )}
+          </Field>
+          <Field data-invalid={errors.current_price ? true : undefined}>
+            <FieldLabel htmlFor="current_price">Total Price</FieldLabel>
+            <Input
+              id="current_price"
+              type="number"
+              step="0.01"
+              {...register("current_price", { setValueAs: toNumber })}
+            />
+            {errors.current_price && (
+              <FieldError>{errors.current_price.message}</FieldError>
+            )}
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="currency">Currency</FieldLabel>
+            <Input id="currency" {...register("currency")} />
+          </Field>
         </div>
 
-        <Field
-          label="Free Cancellation Date"
-          name="cancellation_date"
-          type="date"
-          required
-        />
-        <Field label="Cancellation URL" name="cancellation_url" type="url" />
-        <Field label="Booking Source" name="original_booking_source" />
-        <Field label="Confirmation Number" name="original_confirmation" />
+        <Field data-invalid={errors.cancellation_date ? true : undefined}>
+          <FieldLabel htmlFor="cancellation_date">
+            Free Cancellation Date
+          </FieldLabel>
+          <Input
+            id="cancellation_date"
+            type="date"
+            {...register("cancellation_date")}
+          />
+          {errors.cancellation_date && (
+            <FieldError>{errors.cancellation_date.message}</FieldError>
+          )}
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="cancellation_url">Cancellation URL</FieldLabel>
+          <Input
+            id="cancellation_url"
+            type="url"
+            {...register("cancellation_url")}
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="original_booking_source">
+            Booking Source
+          </FieldLabel>
+          <Input
+            id="original_booking_source"
+            {...register("original_booking_source")}
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="original_confirmation">
+            Confirmation Number
+          </FieldLabel>
+          <Input
+            id="original_confirmation"
+            {...register("original_confirmation")}
+          />
+        </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field
-            label="Min Price Drop %"
-            name="threshold_percent"
-            type="number"
-            step="0.01"
-          />
-          <Field
-            label="Min Price Drop (absolute)"
-            name="threshold_absolute"
-            type="number"
-            step="0.01"
-          />
+          <Field data-invalid={errors.threshold_percent ? true : undefined}>
+            <FieldLabel htmlFor="threshold_percent">
+              Min Price Drop %
+            </FieldLabel>
+            <Input
+              id="threshold_percent"
+              type="number"
+              step="0.01"
+              {...register("threshold_percent", {
+                setValueAs: toNullableNumber,
+              })}
+            />
+            {errors.threshold_percent && (
+              <FieldError>{errors.threshold_percent.message}</FieldError>
+            )}
+          </Field>
+          <Field data-invalid={errors.threshold_absolute ? true : undefined}>
+            <FieldLabel htmlFor="threshold_absolute">
+              Min Price Drop (absolute)
+            </FieldLabel>
+            <Input
+              id="threshold_absolute"
+              type="number"
+              step="0.01"
+              {...register("threshold_absolute", {
+                setValueAs: toNullableNumber,
+              })}
+            />
+            {errors.threshold_absolute && (
+              <FieldError>{errors.threshold_absolute.message}</FieldError>
+            )}
+          </Field>
         </div>
 
         <Field
-          label="Non-refundable window"
-          name="non_refundable_window_days"
-          type="number"
-          defaultValue="3"
-          hint="Include non-refundable rates this many days before your cancellation deadline"
-        />
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          data-invalid={errors.non_refundable_window_days ? true : undefined}
         >
-          {submitting ? "Saving..." : "Add Booking"}
-        </button>
+          <FieldLabel htmlFor="non_refundable_window_days">
+            Non-refundable window
+          </FieldLabel>
+          <Input
+            id="non_refundable_window_days"
+            type="number"
+            {...register("non_refundable_window_days", {
+              setValueAs: toNumber,
+            })}
+          />
+          <FieldDescription>
+            Include non-refundable rates this many days before your cancellation
+            deadline
+          </FieldDescription>
+          {errors.non_refundable_window_days && (
+            <FieldError>{errors.non_refundable_window_days.message}</FieldError>
+          )}
+        </Field>
+
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? "Saving..." : "Add Booking"}
+        </Button>
       </form>
     </main>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  required,
-  defaultValue,
-  step,
-  hint,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  defaultValue?: string;
-  step?: string;
-  hint?: string;
-}) {
-  return (
-    <div>
-      <label htmlFor={name} className="mb-1 block text-sm font-medium">
-        {label}
-      </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        defaultValue={defaultValue}
-        step={step}
-        className="w-full rounded border px-3 py-2 text-sm"
-      />
-      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
-    </div>
   );
 }
