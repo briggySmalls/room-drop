@@ -49,6 +49,7 @@ export default function NewBooking() {
         (form.get("original_confirmation") as string) || null,
       threshold_percent: thresholdPercent ? Number(thresholdPercent) : null,
       threshold_absolute: thresholdAbsolute ? Number(thresholdAbsolute) : null,
+      timeline_shift_days: Number(form.get("timeline_shift_days")) || undefined,
     };
 
     const res = await fetch("/api/bookings", {
@@ -142,6 +143,13 @@ export default function NewBooking() {
             step="0.01"
           />
         </div>
+
+        <Field
+          label="Fire-sale window (days before cancellation)"
+          name="timeline_shift_days"
+          type="number"
+          defaultValue="3"
+        />
 
         <button
           type="submit"

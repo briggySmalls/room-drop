@@ -127,6 +127,37 @@ test.describe.serial("Booking Ingestion", () => {
     ).toBeVisible();
   });
 
+  test("fire-sale window field defaults to 3 and is submitted", async ({
+    page,
+  }) => {
+    await page.goto("/bookings/new");
+
+    const field = page.getByLabel("Fire-sale window");
+    await expect(field).toBeVisible();
+    await expect(field).toHaveValue("3");
+
+    // Fill the rest of the form and submit with custom timeline_shift_days
+    await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
+    await page.getByLabel("Check-in Date").fill("2026-07-01");
+    await page.getByLabel("Check-out Date").fill("2026-07-03");
+    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByLabel("Total Price").fill("500");
+    await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
+    await page.getByLabel("Min Price Drop %").fill("10");
+    await field.clear();
+    await field.fill("5");
+
+    await page.getByRole("button", { name: "Add Booking" }).click();
+    await expect(page).toHaveURL("/");
+
+    const bookings = await getBookings();
+    const created = bookings.find(
+      (b: { hotel_name: string }) => b.hotel_name === "Timeline Test Hotel",
+    );
+    expect(created).toBeDefined();
+    expect(created.timeline_shift_days).toBe(5);
+  });
+
   test("dashboard lists only active bookings", async ({ page }) => {
     await insertBooking({ hotel_name: "The Ritz London", status: "active" });
     await insertBooking({ hotel_name: "Hotel Marylebone", status: "expired" });

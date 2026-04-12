@@ -1,0 +1,44 @@
+{
+  "search_metadata": { "status": "Success" },
+  "name": "Fire-Sale-Hotel",
+  "prices": [
+    {
+      "source": "Hotels.com",
+      "link": "https://www.hotels.com/fire-sale-hotel",
+      "rooms": [
+        {
+          "name": "Deluxe King Room - Non-Refundable",
+          "link": "https://www.hotels.com/fire-sale-hotel",
+          "total_rate": {
+            "lowest": "£800",
+            "extracted_lowest": 800
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£800",
+        "extracted_lowest": 800
+      },
+      "free_cancellation": false
+    },
+    {
+      "source": "Booking.com",
+      "link": "https://www.booking.com/fire-sale-hotel",
+      "rooms": [
+        {
+          "name": "Deluxe King Room",
+          "link": "https://www.booking.com/fire-sale-hotel",
+          "total_rate": {
+            "lowest": "£1,200",
+            "extracted_lowest": 1200
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£1,200",
+        "extracted_lowest": 1200
+      },
+      "free_cancellation": true
+    }
+  ]
+}
