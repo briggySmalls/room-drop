@@ -2,7 +2,7 @@
 
 -- App config
 insert into app_config (notification_email)
-values ('briggysmalls90@gmail.com')
+values ('wasso14@hotmail.com')
 on conflict (id) do update set notification_email = excluded.notification_email;
 
 -- Sample bookings (dates are relative-ish, update as needed)
@@ -15,7 +15,7 @@ insert into bookings (
   (
     'The Ritz London', 'London, UK',
     current_date + interval '60 days', current_date + interval '63 days',
-    'Deluxe King, City View', 2, 1200.00, 'GBP',
+    'Deluxe King, City View', 2, 3100.00, 'GBP',
     current_date + interval '55 days',
     'Booking.com', 'BC-9283746',
     10, 3, 'active'
@@ -31,7 +31,7 @@ insert into bookings (
   (
     'The Savoy', 'London, UK',
     current_date + interval '14 days', current_date + interval '16 days',
-    'Fairmont King Room', 2, 890.00, 'GBP',
+    'Fairmont King Room', 2, 1450.00, 'GBP',
     current_date + interval '2 days',
     'Hotels.com', 'HC-5566778',
     5, 3, 'active'
