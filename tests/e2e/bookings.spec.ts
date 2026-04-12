@@ -97,6 +97,39 @@ test.describe.serial("Booking Ingestion", () => {
     expect(bookings[0].status).toBe("active");
   });
 
+  test("currency combobox filters and selects a currency", async ({ page }) => {
+    await page.goto("/bookings/new");
+
+    // Step 1: fill required fields
+    await page.getByLabel("Hotel Name").fill("Currency Test Hotel");
+    await page.getByLabel("Check-in Date").fill("2026-06-15");
+    await page.getByLabel("Check-out Date").fill("2026-06-18");
+    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByLabel("Total Price").fill("500");
+    await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
+
+    // Open the currency combobox and type to filter
+    const comboboxInput = page.getByPlaceholder("Search currencies...");
+    await comboboxInput.click();
+    await comboboxInput.fill("US");
+
+    // Select USD from the dropdown
+    await page.getByRole("option", { name: /USD/ }).click();
+
+    // Continue through the wizard and submit
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.getByRole("button", { name: "Add Booking" }).click();
+    await expect(page).toHaveURL("/");
+
+    const bookings = await getBookings();
+    const created = bookings.find(
+      (b: { hotel_name: string }) => b.hotel_name === "Currency Test Hotel",
+    );
+    expect(created).toBeDefined();
+    expect(created.currency).toBe("USD");
+  });
+
   test("booking requires at least one deal threshold", async ({ page }) => {
     await page.goto("/bookings/new");
 

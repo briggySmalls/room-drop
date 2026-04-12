@@ -8,6 +8,15 @@ import { bookingSchema, type BookingFormValues } from "@/lib/schemas/booking";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+  ComboboxCollection,
+} from "@/components/ui/combobox";
+import {
   Field,
   FieldLabel,
   FieldError,
@@ -15,6 +24,7 @@ import {
 } from "@/components/ui/field";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { currencies } from "@/lib/currencies";
 
 const toNumber = (v: string) => (v === "" ? undefined : Number(v));
 const toNullableNumber = (v: string) => (v === "" ? null : Number(v));
@@ -37,6 +47,8 @@ export default function NewBooking() {
   const [thresholdMode, setThresholdMode] = useState<"percentage" | "absolute">(
     "percentage",
   );
+
+  const [currency, setCurrency] = useState("GBP");
 
   const {
     register,
@@ -222,8 +234,45 @@ export default function NewBooking() {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="currency">Currency</FieldLabel>
-                <Input id="currency" {...register("currency")} />
+                <FieldLabel>Currency</FieldLabel>
+                <Combobox
+                  value={currency}
+                  onValueChange={(value) => {
+                    const code = (value as string) ?? "GBP";
+                    setCurrency(code);
+                    setValue("currency", code);
+                  }}
+                  items={currencies.map((c) => c.code)}
+                  filter={(code: string, query: string) => {
+                    const c = currencies.find((cur) => cur.code === code);
+                    if (!c) return false;
+                    const q = query.toLowerCase();
+                    return (
+                      c.code.toLowerCase().includes(q) ||
+                      c.name.toLowerCase().includes(q)
+                    );
+                  }}
+                  autoHighlight
+                >
+                  <ComboboxInput placeholder="Search currencies..." />
+                  <ComboboxContent>
+                    <ComboboxList>
+                      <ComboboxCollection>
+                        {(code: string) => {
+                          const c = currencies.find(
+                            (cur) => cur.code === code,
+                          );
+                          return (
+                            <ComboboxItem key={code} value={code}>
+                              {code} &mdash; {c?.name}
+                            </ComboboxItem>
+                          );
+                        }}
+                      </ComboboxCollection>
+                      <ComboboxEmpty>No currencies found</ComboboxEmpty>
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
               </Field>
             </div>
 
