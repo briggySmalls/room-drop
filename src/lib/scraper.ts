@@ -16,6 +16,8 @@ interface SerpApiSearchProperty {
 
 interface SerpApiSearchResponse {
   properties?: SerpApiSearchProperty[];
+  prices?: SerpApiPriceEntry[];
+  featured_prices?: SerpApiPriceEntry[];
   error?: string;
 }
 
@@ -65,6 +67,12 @@ export async function searchHotelPrices(
   if (searchData.error) {
     console.error("SerpAPI search error:", searchData.error);
     return { rates: [], raw: searchData, propertyFound: false };
+  }
+
+  // SerpAPI returns property details directly when the query matches exactly
+  if (searchData.prices || searchData.featured_prices) {
+    const rates = parseRates(searchData);
+    return { rates, raw: searchData, propertyFound: true };
   }
 
   const matchedProperty = searchData.properties?.[0];
