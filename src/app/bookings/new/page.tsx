@@ -285,7 +285,11 @@ export default function NewBooking() {
 
         {step === 2 && (
           <>
-            <div>
+            <Field>
+              <FieldLabel>Deal Threshold</FieldLabel>
+              <FieldDescription>
+                Minimum price drop before we send you an alert
+              </FieldDescription>
               <Tabs
                 value={thresholdMode}
                 onValueChange={(value) =>
@@ -337,7 +341,7 @@ export default function NewBooking() {
               {errors.threshold_percent && (
                 <FieldError>{errors.threshold_percent.message}</FieldError>
               )}
-            </div>
+            </Field>
 
             <Field
               data-invalid={
@@ -347,6 +351,10 @@ export default function NewBooking() {
               <FieldLabel htmlFor="non_refundable_window_days">
                 Non-refundable window
               </FieldLabel>
+              <FieldDescription>
+                Include non-refundable rates this many days before your
+                cancellation deadline
+              </FieldDescription>
               <Input
                 id="non_refundable_window_days"
                 type="number"
@@ -354,10 +362,6 @@ export default function NewBooking() {
                   setValueAs: toNumber,
                 })}
               />
-              <FieldDescription>
-                Include non-refundable rates this many days before your
-                cancellation deadline
-              </FieldDescription>
               {errors.non_refundable_window_days && (
                 <FieldError>
                   {errors.non_refundable_window_days.message}

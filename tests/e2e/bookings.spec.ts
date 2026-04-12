@@ -117,7 +117,7 @@ test.describe.serial("Booking Ingestion", () => {
     // Both thresholds are now null
     await page.getByRole("button", { name: "Add Booking" }).click();
 
-    await expect(page.getByText("threshold")).toBeVisible();
+    await expect(page.getByText("At least one deal threshold")).toBeVisible();
   });
 
   test("check-out date must be after check-in date", async ({ page }) => {
