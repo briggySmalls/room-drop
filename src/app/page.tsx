@@ -58,7 +58,9 @@ export default function Dashboard() {
                   <td className="py-3 pr-4 text-gray-600">
                     {b.check_in_date} → {b.check_out_date}
                   </td>
-                  <td className="py-3 pr-4 text-gray-600">{b.room_type}</td>
+                  <td className="py-3 pr-4 text-gray-600">
+                    {b.room_type ?? "Any room"}
+                  </td>
                   <td className="py-3 pr-4">
                     {b.currency} {Number(b.current_price).toFixed(2)}
                   </td>

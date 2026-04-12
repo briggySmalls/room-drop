@@ -18,11 +18,13 @@ import {
 } from "@/components/ui/combobox";
 import {
   Field,
+  FieldContent,
   FieldLabel,
   FieldError,
   FieldDescription,
 } from "@/components/ui/field";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { currencies } from "@/lib/currencies";
 
@@ -49,6 +51,7 @@ export default function NewBooking() {
   );
 
   const [currency, setCurrency] = useState("GBP");
+  const [roomSpecific, setRoomSpecific] = useState(true);
 
   const {
     register,
@@ -65,12 +68,16 @@ export default function NewBooking() {
       num_guests: 2,
       non_refundable_window_days: 3,
       threshold_percent: 10,
+      room_specific: true,
     },
   });
 
   async function nextStep() {
     if (step === 0) {
-      const valid = await trigger([...STEP_1_FIELDS]);
+      const fieldsToValidate = roomSpecific
+        ? [...STEP_1_FIELDS]
+        : STEP_1_FIELDS.filter((f) => f !== "room_type");
+      const valid = await trigger(fieldsToValidate);
       if (!valid) return;
 
       const checkIn = getValues("check_in_date");
@@ -201,13 +208,40 @@ export default function NewBooking() {
               </Field>
             </div>
 
-            <Field data-invalid={errors.room_type ? true : undefined}>
-              <FieldLabel htmlFor="room_type">Room Type</FieldLabel>
-              <Input id="room_type" {...register("room_type")} />
-              {errors.room_type && (
-                <FieldError>{errors.room_type.message}</FieldError>
-              )}
+            <Field orientation="horizontal">
+              <Checkbox
+                id="room_specific"
+                checked={roomSpecific}
+                onCheckedChange={(checked) => {
+                  const value = Boolean(checked);
+                  setRoomSpecific(value);
+                  setValue("room_specific", value);
+                  if (!value) {
+                    setValue("room_type", null);
+                  }
+                }}
+              />
+              <FieldContent>
+                <FieldLabel htmlFor="room_specific">
+                  Match specific room type
+                </FieldLabel>
+                <FieldDescription>
+                  {roomSpecific
+                    ? "Only rates with a known room type will be compared"
+                    : "All rates considered regardless of room type — more results, but you may be alerted about a different room"}
+                </FieldDescription>
+              </FieldContent>
             </Field>
+
+            {roomSpecific && (
+              <Field data-invalid={errors.room_type ? true : undefined}>
+                <FieldLabel htmlFor="room_type">Room Type</FieldLabel>
+                <Input id="room_type" {...register("room_type")} />
+                {errors.room_type && (
+                  <FieldError>{errors.room_type.message}</FieldError>
+                )}
+              </Field>
+            )}
 
             <div className="grid grid-cols-3 gap-4">
               <Field data-invalid={errors.num_guests ? true : undefined}>

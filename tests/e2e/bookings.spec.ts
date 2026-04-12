@@ -75,7 +75,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Location").fill("London, UK");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
-    await page.getByLabel("Room Type").fill("Deluxe King, City View");
+    await page.getByRole("textbox", { name: "Room Type" }).fill("Deluxe King, City View");
     await page.getByLabel("Number of Guests").fill("2");
     await page.getByLabel("Total Price").fill("1200.00");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -104,7 +104,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Currency Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
-    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
 
@@ -137,7 +137,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
-    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
     await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -159,7 +159,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-18");
     await page.getByLabel("Check-out Date").fill("2026-06-15");
-    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
 
@@ -180,7 +180,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
-    await page.getByLabel("Room Type").fill("Standard");
+    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
     await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -204,6 +204,41 @@ test.describe.serial("Booking Ingestion", () => {
     );
     expect(created).toBeDefined();
     expect(created.non_refundable_window_days).toBe(5);
+  });
+
+  test("create a booking with any-room mode", async ({ page }) => {
+    await page.goto("/bookings/new");
+
+    // Step 1: uncheck room-specific matching
+    await page.getByLabel("Hotel Name").fill("Any Room Hotel");
+    await page.getByLabel("Check-in Date").fill("2026-07-01");
+    await page.getByLabel("Check-out Date").fill("2026-07-03");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
+    await page.getByLabel("Total Price").fill("800");
+    await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 2: skip
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 3: defaults
+    await page.getByRole("button", { name: "Add Booking" }).click();
+    await expect(page).toHaveURL("/");
+
+    // Dashboard should show "Any room" for this booking
+    await expect(
+      page.getByRole("cell", { name: "Any room", exact: true }),
+    ).toBeVisible();
+
+    const bookings = await getBookings();
+    const created = bookings.find(
+      (b: { hotel_name: string }) => b.hotel_name === "Any Room Hotel",
+    );
+    expect(created).toBeDefined();
+    expect(created.room_specific).toBe(false);
+    expect(created.room_type).toBeNull();
   });
 
   test("dashboard lists only active bookings", async ({ page }) => {

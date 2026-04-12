@@ -78,7 +78,7 @@ export default function BookingDetail() {
         </div>
         <div>
           <span className="text-gray-500">Room</span>
-          <p>{booking.room_type}</p>
+          <p>{booking.room_type ?? "Any room"}</p>
         </div>
         <div>
           <span className="text-gray-500">Price</span>
