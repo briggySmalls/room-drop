@@ -26,6 +26,6 @@ export default tseslint.config(
   },
   prettier,
   {
-    ignores: [".next/", "node_modules/"],
+    ignores: [".next/", ".next-test/", "node_modules/"],
   },
 );
