@@ -127,16 +127,16 @@ test.describe.serial("Booking Ingestion", () => {
     ).toBeVisible();
   });
 
-  test("fire-sale window field defaults to 3 and is submitted", async ({
+  test("non-refundable window field defaults to 3 and is submitted", async ({
     page,
   }) => {
     await page.goto("/bookings/new");
 
-    const field = page.getByLabel("Fire-sale window");
+    const field = page.getByLabel("Non-refundable window");
     await expect(field).toBeVisible();
     await expect(field).toHaveValue("3");
 
-    // Fill the rest of the form and submit with custom timeline_shift_days
+    // Fill the rest of the form and submit with custom non_refundable_window_days
     await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
@@ -155,7 +155,7 @@ test.describe.serial("Booking Ingestion", () => {
       (b: { hotel_name: string }) => b.hotel_name === "Timeline Test Hotel",
     );
     expect(created).toBeDefined();
-    expect(created.timeline_shift_days).toBe(5);
+    expect(created.non_refundable_window_days).toBe(5);
   });
 
   test("dashboard lists only active bookings", async ({ page }) => {

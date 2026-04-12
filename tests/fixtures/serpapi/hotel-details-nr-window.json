@@ -1,14 +1,14 @@
 {
   "search_metadata": { "status": "Success" },
-  "name": "Fire-Sale-Hotel",
+  "name": "NR-Window-Hotel",
   "prices": [
     {
       "source": "Hotels.com",
-      "link": "https://www.hotels.com/fire-sale-hotel",
+      "link": "https://www.hotels.com/nr-window-hotel",
       "rooms": [
         {
           "name": "Deluxe King Room - Non-Refundable",
-          "link": "https://www.hotels.com/fire-sale-hotel",
+          "link": "https://www.hotels.com/nr-window-hotel",
           "total_rate": {
             "lowest": "£800",
             "extracted_lowest": 800
@@ -23,11 +23,11 @@
     },
     {
       "source": "Booking.com",
-      "link": "https://www.booking.com/fire-sale-hotel",
+      "link": "https://www.booking.com/nr-window-hotel",
       "rooms": [
         {
           "name": "Deluxe King Room",
-          "link": "https://www.booking.com/fire-sale-hotel",
+          "link": "https://www.booking.com/nr-window-hotel",
           "total_rate": {
             "lowest": "£1,200",
             "extracted_lowest": 1200

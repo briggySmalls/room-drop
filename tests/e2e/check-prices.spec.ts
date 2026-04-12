@@ -234,7 +234,7 @@ test.describe.serial("Intelligent Room Matching", () => {
       cancellation_date: new Date(
         Date.now() + 2 * 24 * 60 * 60 * 1000,
       ).toISOString(),
-      timeline_shift_days: 3,
+      non_refundable_window_days: 3,
       current_price: 1200,
     });
 
@@ -333,7 +333,7 @@ test.describe.serial("Booking Expiry and Cleanup", () => {
   });
 });
 
-test.describe.serial("Timeline Shift (Fire-sale Mode)", () => {
+test.describe.serial("Non-refundable Window", () => {
   test.beforeEach(async () => {
     await clearTable("alerts_sent");
     await clearTable("scan_results");
@@ -348,16 +348,16 @@ test.describe.serial("Timeline Shift (Fire-sale Mode)", () => {
   });
 
   test("non-refundable rates included when within timeline shift window", async () => {
-    // Fire-Sale-Hotel has: non-refundable Deluxe King at 800, refundable at 1200
+    // NR-Window-Hotel has: non-refundable Deluxe King at 800, refundable at 1200
     // Near cancellation → all_rates mode → 800 non-refundable is cheapest → match → alert
     const booking = await insertBooking({
-      hotel_name: "Fire-Sale-Hotel",
+      hotel_name: "NR-Window-Hotel",
       current_price: 1200,
       threshold_percent: 10,
       cancellation_date: new Date(
         Date.now() + 2 * 24 * 60 * 60 * 1000,
       ).toISOString(),
-      timeline_shift_days: 3,
+      non_refundable_window_days: 3,
     });
 
     const res = await triggerCron();
@@ -376,13 +376,13 @@ test.describe.serial("Timeline Shift (Fire-sale Mode)", () => {
   });
 
   test("non-refundable rates excluded when outside timeline shift window", async () => {
-    // Fire-Sale-Hotel: refundable rate is 1200 = same as current_price → no cheaper rates
+    // NR-Window-Hotel: refundable rate is 1200 = same as current_price → no cheaper rates
     const booking = await insertBooking({
-      hotel_name: "Fire-Sale-Hotel",
+      hotel_name: "NR-Window-Hotel",
       current_price: 1200,
       threshold_percent: 10,
       cancellation_date: "2026-08-01T23:59:00Z",
-      timeline_shift_days: 3,
+      non_refundable_window_days: 3,
     });
 
     const res = await triggerCron();
@@ -395,15 +395,15 @@ test.describe.serial("Timeline Shift (Fire-sale Mode)", () => {
   });
 
   test("custom timeline shift window is respected", async () => {
-    // 7-day window, 7 days before cancellation → should enter fire-sale mode
+    // 7-day window, 7 days before cancellation → should include non-refundable rates
     const booking = await insertBooking({
-      hotel_name: "Fire-Sale-Hotel",
+      hotel_name: "NR-Window-Hotel",
       current_price: 1200,
       threshold_percent: 10,
       cancellation_date: new Date(
         Date.now() + 7 * 24 * 60 * 60 * 1000,
       ).toISOString(),
-      timeline_shift_days: 7,
+      non_refundable_window_days: 7,
     });
 
     await triggerCron();

@@ -1,10 +1,10 @@
 import { http, HttpResponse, RequestHandler } from "msw";
 import hotelSearchRitz from "../fixtures/serpapi/hotel-search-ritz.json";
 import hotelSearchNoDeals from "../fixtures/serpapi/hotel-search-no-deals.json";
-import hotelSearchFiresale from "../fixtures/serpapi/hotel-search-firesale.json";
+import hotelSearchNrWindow from "../fixtures/serpapi/hotel-search-nr-window.json";
 import hotelDetailsRitz from "../fixtures/serpapi/hotel-details-ritz.json";
 import hotelDetailsNoDeals from "../fixtures/serpapi/hotel-details-no-deals.json";
-import hotelDetailsFiresale from "../fixtures/serpapi/hotel-details-firesale.json";
+import hotelDetailsNrWindow from "../fixtures/serpapi/hotel-details-nr-window.json";
 import roomMatch from "../fixtures/anthropic/room-match.json";
 import roomDowngrade from "../fixtures/anthropic/room-downgrade.json";
 import roomLowConfidence from "../fixtures/anthropic/room-low-confidence.json";
@@ -22,8 +22,8 @@ export const handlers: RequestHandler[] = [
       if (propertyToken === "test-no-deals-token") {
         return HttpResponse.json(hotelDetailsNoDeals);
       }
-      if (propertyToken === "test-firesale-token") {
-        return HttpResponse.json(hotelDetailsFiresale);
+      if (propertyToken === "test-nr-window-token") {
+        return HttpResponse.json(hotelDetailsNrWindow);
       }
       return HttpResponse.json(hotelDetailsRitz);
     }
@@ -32,8 +32,8 @@ export const handlers: RequestHandler[] = [
     if (query.toLowerCase().includes("no-deals-hotel")) {
       return HttpResponse.json(hotelSearchNoDeals);
     }
-    if (query.toLowerCase().includes("fire-sale-hotel")) {
-      return HttpResponse.json(hotelSearchFiresale);
+    if (query.toLowerCase().includes("nr-window-hotel")) {
+      return HttpResponse.json(hotelSearchNrWindow);
     }
     return HttpResponse.json(hotelSearchRitz);
   }),

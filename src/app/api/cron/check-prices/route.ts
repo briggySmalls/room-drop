@@ -65,7 +65,7 @@ async function processBooking(
   );
 
   const filterMode: FilterMode =
-    daysUntilCancellation <= booking.timeline_shift_days
+    daysUntilCancellation <= booking.non_refundable_window_days
       ? "all_rates"
       : "refundable_only";
 

@@ -15,7 +15,7 @@ create table bookings (
   original_confirmation text,
   threshold_percent numeric(5,2),
   threshold_absolute numeric(10,2),
-  timeline_shift_days integer not null default 3,
+  non_refundable_window_days integer not null default 3,
   status text not null default 'active',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),

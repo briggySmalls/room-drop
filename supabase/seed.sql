@@ -10,7 +10,7 @@ insert into bookings (
   hotel_name, hotel_location, check_in_date, check_out_date,
   room_type, num_guests, current_price, currency,
   cancellation_date, original_booking_source, original_confirmation,
-  threshold_percent, timeline_shift_days, status
+  threshold_percent, non_refundable_window_days, status
 ) values
   (
     'The Ritz London', 'London, UK',

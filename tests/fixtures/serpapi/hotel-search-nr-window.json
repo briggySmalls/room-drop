@@ -2,8 +2,8 @@
   "search_metadata": { "status": "Success" },
   "properties": [
     {
-      "name": "Fire-Sale-Hotel",
-      "property_token": "test-firesale-token",
+      "name": "NR-Window-Hotel",
+      "property_token": "test-nr-window-token",
       "total_rate": {
         "lowest": "£800",
         "extracted_lowest": 800

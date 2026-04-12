@@ -49,7 +49,8 @@ export default function NewBooking() {
         (form.get("original_confirmation") as string) || null,
       threshold_percent: thresholdPercent ? Number(thresholdPercent) : null,
       threshold_absolute: thresholdAbsolute ? Number(thresholdAbsolute) : null,
-      timeline_shift_days: Number(form.get("timeline_shift_days")) || undefined,
+      non_refundable_window_days:
+        Number(form.get("non_refundable_window_days")) || undefined,
     };
 
     const res = await fetch("/api/bookings", {
@@ -145,10 +146,11 @@ export default function NewBooking() {
         </div>
 
         <Field
-          label="Fire-sale window (days before cancellation)"
-          name="timeline_shift_days"
+          label="Non-refundable window"
+          name="non_refundable_window_days"
           type="number"
           defaultValue="3"
+          hint="Include non-refundable rates this many days before your cancellation deadline"
         />
 
         <button
@@ -170,6 +172,7 @@ function Field({
   required,
   defaultValue,
   step,
+  hint,
 }: {
   label: string;
   name: string;
@@ -177,6 +180,7 @@ function Field({
   required?: boolean;
   defaultValue?: string;
   step?: string;
+  hint?: string;
 }) {
   return (
     <div>
@@ -192,6 +196,7 @@ function Field({
         step={step}
         className="w-full rounded border px-3 py-2 text-sm"
       />
+      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
     </div>
   );
 }

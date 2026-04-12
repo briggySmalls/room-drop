@@ -27,7 +27,7 @@ export interface Booking {
   original_confirmation: string | null;
   threshold_percent: number | null;
   threshold_absolute: number | null;
-  timeline_shift_days: number;
+  non_refundable_window_days: number;
   status: BookingStatus;
   created_at: string;
   updated_at: string;
@@ -48,7 +48,7 @@ export interface BookingInsert {
   original_confirmation?: string | null;
   threshold_percent?: number | null;
   threshold_absolute?: number | null;
-  timeline_shift_days?: number;
+  non_refundable_window_days?: number;
 }
 
 export interface AppConfig {

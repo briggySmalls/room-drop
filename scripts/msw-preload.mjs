@@ -13,10 +13,12 @@ function loadFixture(path) {
 
 const hotelSearchRitz = loadFixture("serpapi/hotel-search-ritz.json");
 const hotelSearchNoDeals = loadFixture("serpapi/hotel-search-no-deals.json");
-const hotelSearchFiresale = loadFixture("serpapi/hotel-search-firesale.json");
+const hotelSearchNrWindow = loadFixture("serpapi/hotel-search-nr-window.json");
 const hotelDetailsRitz = loadFixture("serpapi/hotel-details-ritz.json");
 const hotelDetailsNoDeals = loadFixture("serpapi/hotel-details-no-deals.json");
-const hotelDetailsFiresale = loadFixture("serpapi/hotel-details-firesale.json");
+const hotelDetailsNrWindow = loadFixture(
+  "serpapi/hotel-details-nr-window.json",
+);
 const roomMatch = loadFixture("anthropic/room-match.json");
 const roomDowngrade = loadFixture("anthropic/room-downgrade.json");
 const sendSuccess = loadFixture("resend/send-success.json");
@@ -31,8 +33,8 @@ const handlers = [
       if (propertyToken === "test-no-deals-token") {
         return HttpResponse.json(hotelDetailsNoDeals);
       }
-      if (propertyToken === "test-firesale-token") {
-        return HttpResponse.json(hotelDetailsFiresale);
+      if (propertyToken === "test-nr-window-token") {
+        return HttpResponse.json(hotelDetailsNrWindow);
       }
       return HttpResponse.json(hotelDetailsRitz);
     }
@@ -40,8 +42,8 @@ const handlers = [
     if (query.toLowerCase().includes("no-deals-hotel")) {
       return HttpResponse.json(hotelSearchNoDeals);
     }
-    if (query.toLowerCase().includes("fire-sale-hotel")) {
-      return HttpResponse.json(hotelSearchFiresale);
+    if (query.toLowerCase().includes("nr-window-hotel")) {
+      return HttpResponse.json(hotelSearchNrWindow);
     }
     return HttpResponse.json(hotelSearchRitz);
   }),
