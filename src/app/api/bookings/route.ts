@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/db";
-import { BookingInsert } from "@/lib/types";
+import { bookingSchema } from "@/lib/schemas/booking";
 
 export async function GET() {
   const supabase = getSupabase();
@@ -18,45 +18,18 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const body: BookingInsert = await request.json();
+  const body = await request.json();
+  const result = bookingSchema.safeParse(body);
 
-  const errors: string[] = [];
-
-  if (!body.hotel_name?.trim()) {
-    errors.push("Hotel name is required");
-  }
-  if (!body.check_in_date) {
-    errors.push("Check-in date is required");
-  }
-  if (!body.check_out_date) {
-    errors.push("Check-out date is required");
-  }
-  if (body.check_in_date && body.check_out_date) {
-    if (body.check_out_date <= body.check_in_date) {
-      errors.push("Check-out date must be after check-in date");
-    }
-  }
-  if (!body.room_type?.trim()) {
-    errors.push("Room type is required");
-  }
-  if (!body.current_price || body.current_price <= 0) {
-    errors.push("Price must be a positive number");
-  }
-  if (!body.cancellation_date) {
-    errors.push("Cancellation date is required");
-  }
-  if (!body.threshold_percent && !body.threshold_absolute) {
-    errors.push("At least one deal threshold (% or absolute) is required");
-  }
-
-  if (errors.length > 0) {
+  if (!result.success) {
+    const errors = result.error.issues.map((issue) => issue.message);
     return NextResponse.json({ errors }, { status: 400 });
   }
 
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("bookings")
-    .insert(body)
+    .insert(result.data)
     .select()
     .single();
 
