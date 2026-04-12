@@ -5,7 +5,7 @@ import { searchHotelPrices } from "@/lib/scraper";
 import { compareRooms } from "@/lib/llm";
 import { sendEmail } from "@/lib/email";
 import { buildDealFoundEmail } from "@/emails/deal-found";
-import { Booking, FilterMode, RoomVerdict } from "@/lib/types";
+import { Booking, FilterMode, RoomVerdict, ScanStatus } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   if (env.cronSecret) {
@@ -69,7 +69,7 @@ async function processBooking(
       ? "all_rates"
       : "refundable_only";
 
-  const { rates, raw } = await searchHotelPrices(
+  const { rates, raw, propertyFound } = await searchHotelPrices(
     booking.hotel_name,
     booking.hotel_location,
     booking.check_in_date,
@@ -89,18 +89,32 @@ async function processBooking(
   );
 
   if (cheaperRates.length === 0) {
-    // No cheaper rates — store scan result with no deal
+    const scanStatus: ScanStatus = !propertyFound
+      ? "no_property_found"
+      : rates.length === 0
+        ? "no_rates_parsed"
+        : eligibleRates.length === 0
+          ? "no_eligible_rates"
+          : "no_cheaper_rates";
+
+    // For no_cheaper_rates, still record the best available rate for context
+    const bestAvailable =
+      scanStatus === "no_cheaper_rates"
+        ? eligibleRates.reduce((a, b) => (a.price < b.price ? a : b))
+        : null;
+
     const { data: scanResult } = await supabase
       .from("scan_results")
       .insert({
         booking_id: booking.id,
+        scan_status: scanStatus,
         filter_mode: filterMode,
         raw_response: raw,
-        best_price: null,
-        best_source: null,
-        best_room_desc: null,
-        best_link: null,
-        is_refundable: null,
+        best_price: bestAvailable?.price ?? null,
+        best_source: bestAvailable?.source ?? null,
+        best_room_desc: bestAvailable?.room_description ?? null,
+        best_link: bestAvailable?.link ?? null,
+        is_refundable: bestAvailable?.free_cancellation ?? null,
         llm_verdict: null,
         llm_confidence: null,
         llm_reasoning: null,
@@ -114,6 +128,7 @@ async function processBooking(
     return {
       booking_id: booking.id,
       deal_found: false,
+      scan_status: scanStatus,
       scan_result_id: scanResult?.id,
     };
   }
@@ -164,6 +179,7 @@ async function processBooking(
     .from("scan_results")
     .insert({
       booking_id: booking.id,
+      scan_status: "deal_found",
       filter_mode: filterMode,
       raw_response: raw,
       best_price: bestRate.price,

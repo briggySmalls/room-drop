@@ -2,6 +2,7 @@ create table scan_results (
   id uuid primary key default gen_random_uuid(),
   booking_id uuid not null references bookings(id),
   scanned_at timestamptz not null default now(),
+  scan_status text not null,
   filter_mode text not null,
   raw_response jsonb,
   best_price numeric(10,2),

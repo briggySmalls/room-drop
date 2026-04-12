@@ -46,7 +46,7 @@ export async function searchHotelPrices(
   checkIn: string,
   checkOut: string,
   numGuests: number,
-): Promise<{ rates: HotelRate[]; raw: unknown }> {
+): Promise<{ rates: HotelRate[]; raw: unknown; propertyFound: boolean }> {
   // Step 1: Search for the hotel to get its property_token
   const query = location ? `${hotelName} ${location}` : hotelName;
   const searchParams = new URLSearchParams({
@@ -64,13 +64,13 @@ export async function searchHotelPrices(
 
   if (searchData.error) {
     console.error("SerpAPI search error:", searchData.error);
-    return { rates: [], raw: searchData };
+    return { rates: [], raw: searchData, propertyFound: false };
   }
 
   const matchedProperty = searchData.properties?.[0];
   if (!matchedProperty?.property_token) {
     console.error("SerpAPI: no matching property found");
-    return { rates: [], raw: searchData };
+    return { rates: [], raw: searchData, propertyFound: false };
   }
 
   // Step 2: Fetch property details for per-source pricing
@@ -90,11 +90,19 @@ export async function searchHotelPrices(
 
   if (detailData.error) {
     console.error("SerpAPI detail error:", detailData.error);
-    return { rates: [], raw: { search: searchData, details: detailData } };
+    return {
+      rates: [],
+      raw: { search: searchData, details: detailData },
+      propertyFound: true,
+    };
   }
 
   const rates = parseRates(detailData);
-  return { rates, raw: { search: searchData, details: detailData } };
+  return {
+    rates,
+    raw: { search: searchData, details: detailData },
+    propertyFound: true,
+  };
 }
 
 function parseRates(data: SerpApiDetailsResponse): HotelRate[] {

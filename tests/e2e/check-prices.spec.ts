@@ -135,6 +135,7 @@ test.describe.serial("Continuous Price Checking", () => {
 
     const scans = await getScanResults(booking.id);
     expect(scans).toHaveLength(1);
+    expect(scans[0].scan_status).toBe("deal_found");
     expect(Number(scans[0].best_price)).toBe(1000);
     expect(scans[0].filter_mode).toBe("refundable_only");
     expect(scans[0].llm_verdict).toBe("match");
@@ -169,7 +170,10 @@ test.describe.serial("Continuous Price Checking", () => {
 
     const scans = await getScanResults(booking.id);
     expect(scans).toHaveLength(1);
-    expect(scans[0].best_price).toBeNull();
+    expect(scans[0].scan_status).toBe("no_cheaper_rates");
+    expect(Number(scans[0].best_price)).toBe(1300);
+    expect(scans[0].best_source).toBe("Booking.com");
+    expect(scans[0].best_room_desc).toBe("Standard Room");
   });
 
   test("pipeline filters to refundable rates only when far from cancellation", async () => {
@@ -185,6 +189,7 @@ test.describe.serial("Continuous Price Checking", () => {
 
     const scans = await getScanResults(booking.id);
     expect(scans).toHaveLength(1);
+    expect(scans[0].scan_status).toBe("deal_found");
     expect(scans[0].filter_mode).toBe("refundable_only");
     expect(Number(scans[0].best_price)).toBe(1000);
   });
@@ -237,6 +242,7 @@ test.describe.serial("Intelligent Room Matching", () => {
 
     const scans = await getScanResults(booking.id);
     expect(scans).toHaveLength(1);
+    expect(scans[0].scan_status).toBe("deal_found");
     // In all_rates mode, cheapest is 900 "Standard Twin Room" → downgrade
     expect(scans[0].llm_verdict).toBe("downgrade");
     expect(scans[0].alert_triggered).toBe(false);
@@ -358,6 +364,7 @@ test.describe.serial("Email Alerts", () => {
     expect(alerts[0].resend_id).toBe("test-resend-id-001");
 
     const scans = await getScanResults(booking.id);
+    expect(scans[0].scan_status).toBe("deal_found");
     expect(scans[0].alert_triggered).toBe(true);
   });
 
