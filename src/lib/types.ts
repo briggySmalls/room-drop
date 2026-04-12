@@ -17,7 +17,8 @@ export interface Booking {
   hotel_location: string | null;
   check_in_date: string;
   check_out_date: string;
-  room_type: string;
+  room_type: string | null;
+  room_specific: boolean;
   num_guests: number;
   current_price: number;
   currency: string;
@@ -38,7 +39,8 @@ export interface BookingInsert {
   hotel_location?: string | null;
   check_in_date: string;
   check_out_date: string;
-  room_type: string;
+  room_type?: string | null;
+  room_specific?: boolean;
   num_guests?: number;
   current_price: number;
   currency?: string;

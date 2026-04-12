@@ -137,7 +137,7 @@ async function processBooking(
   const bestRate = cheaperRates.reduce((a, b) => (a.price < b.price ? a : b));
 
   const comparison = await compareRooms(
-    booking.room_type,
+    booking.room_type!,
     bestRate.room_description,
     booking.hotel_name,
   );

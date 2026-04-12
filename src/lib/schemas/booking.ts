@@ -5,7 +5,8 @@ export const bookingFields = z.object({
   hotel_location: z.string().nullable().optional(),
   check_in_date: z.string().min(1, "Check-in date is required"),
   check_out_date: z.string().min(1, "Check-out date is required"),
-  room_type: z.string().trim().min(1, "Room type is required"),
+  room_type: z.string().trim().nullable().optional(),
+  room_specific: z.boolean().optional().default(true),
   num_guests: z.number().int().positive().optional().default(2),
   current_price: z.number().positive("Price must be a positive number"),
   currency: z.string().optional().default("GBP"),
@@ -26,6 +27,13 @@ export const bookingSchema = bookingFields
   .refine((data) => data.threshold_percent || data.threshold_absolute, {
     message: "At least one deal threshold (% or absolute) is required",
     path: ["threshold_percent"],
-  });
+  })
+  .refine(
+    (data) => !data.room_specific || (data.room_type && data.room_type.length > 0),
+    {
+      message: "Room type is required when room matching is enabled",
+      path: ["room_type"],
+    },
+  );
 
 export type BookingFormValues = z.input<typeof bookingFields>;
