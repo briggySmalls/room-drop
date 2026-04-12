@@ -1,0 +1,13 @@
+{
+  "search_metadata": { "status": "Success" },
+  "properties": [
+    {
+      "name": "Mixed Rooms Hotel",
+      "property_token": "test-mixed-rooms-token",
+      "total_rate": {
+        "lowest": "£800",
+        "extracted_lowest": 800
+      }
+    }
+  ]
+}

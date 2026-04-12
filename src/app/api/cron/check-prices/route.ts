@@ -78,10 +78,17 @@ async function processBooking(
   );
 
   // Filter rates by refundable status
-  const eligibleRates =
+  let eligibleRates =
     filterMode === "refundable_only"
       ? rates.filter((r) => r.free_cancellation)
       : rates;
+
+  // When room type matters, exclude rates without a known room description
+  if (booking.room_specific) {
+    eligibleRates = eligibleRates.filter(
+      (r) => r.room_description !== "Unknown room",
+    );
+  }
 
   // Find cheaper rates
   const cheaperRates = eligibleRates.filter(
@@ -136,11 +143,17 @@ async function processBooking(
   // Evaluate the cheapest rate with LLM
   const bestRate = cheaperRates.reduce((a, b) => (a.price < b.price ? a : b));
 
-  const comparison = await compareRooms(
-    booking.room_type!,
-    bestRate.room_description,
-    booking.hotel_name,
-  );
+  const comparison = booking.room_specific
+    ? await compareRooms(
+        booking.room_type!,
+        bestRate.room_description,
+        booking.hotel_name,
+      )
+    : {
+        verdict: "match" as const,
+        confidence: 1.0,
+        reasoning: "Room comparison skipped — any room accepted",
+      };
 
   const savingsAmount = Number(booking.current_price) - bestRate.price;
   const savingsPercent = (savingsAmount / Number(booking.current_price)) * 100;

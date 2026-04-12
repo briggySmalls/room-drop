@@ -5,6 +5,8 @@ import hotelSearchNrWindow from "../fixtures/serpapi/hotel-search-nr-window.json
 import hotelDetailsRitz from "../fixtures/serpapi/hotel-details-ritz.json";
 import hotelDetailsNoDeals from "../fixtures/serpapi/hotel-details-no-deals.json";
 import hotelDetailsNrWindow from "../fixtures/serpapi/hotel-details-nr-window.json";
+import hotelSearchMixedRooms from "../fixtures/serpapi/hotel-search-mixed-rooms.json";
+import hotelDetailsMixedRooms from "../fixtures/serpapi/hotel-details-mixed-rooms.json";
 import roomMatch from "../fixtures/anthropic/room-match.json";
 import roomDowngrade from "../fixtures/anthropic/room-downgrade.json";
 import roomLowConfidence from "../fixtures/anthropic/room-low-confidence.json";
@@ -25,6 +27,9 @@ export const handlers: RequestHandler[] = [
       if (propertyToken === "test-nr-window-token") {
         return HttpResponse.json(hotelDetailsNrWindow);
       }
+      if (propertyToken === "test-mixed-rooms-token") {
+        return HttpResponse.json(hotelDetailsMixedRooms);
+      }
       return HttpResponse.json(hotelDetailsRitz);
     }
 
@@ -34,6 +39,9 @@ export const handlers: RequestHandler[] = [
     }
     if (query.toLowerCase().includes("nr-window-hotel")) {
       return HttpResponse.json(hotelSearchNrWindow);
+    }
+    if (query.toLowerCase().includes("mixed rooms hotel")) {
+      return HttpResponse.json(hotelSearchMixedRooms);
     }
     return HttpResponse.json(hotelSearchRitz);
   }),

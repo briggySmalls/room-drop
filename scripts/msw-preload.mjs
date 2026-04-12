@@ -19,6 +19,12 @@ const hotelDetailsNoDeals = loadFixture("serpapi/hotel-details-no-deals.json");
 const hotelDetailsNrWindow = loadFixture(
   "serpapi/hotel-details-nr-window.json",
 );
+const hotelSearchMixedRooms = loadFixture(
+  "serpapi/hotel-search-mixed-rooms.json",
+);
+const hotelDetailsMixedRooms = loadFixture(
+  "serpapi/hotel-details-mixed-rooms.json",
+);
 const roomMatch = loadFixture("anthropic/room-match.json");
 const roomDowngrade = loadFixture("anthropic/room-downgrade.json");
 const sendSuccess = loadFixture("resend/send-success.json");
@@ -36,6 +42,9 @@ const handlers = [
       if (propertyToken === "test-nr-window-token") {
         return HttpResponse.json(hotelDetailsNrWindow);
       }
+      if (propertyToken === "test-mixed-rooms-token") {
+        return HttpResponse.json(hotelDetailsMixedRooms);
+      }
       return HttpResponse.json(hotelDetailsRitz);
     }
 
@@ -44,6 +53,9 @@ const handlers = [
     }
     if (query.toLowerCase().includes("nr-window-hotel")) {
       return HttpResponse.json(hotelSearchNrWindow);
+    }
+    if (query.toLowerCase().includes("mixed rooms hotel")) {
+      return HttpResponse.json(hotelSearchMixedRooms);
     }
     return HttpResponse.json(hotelSearchRitz);
   }),

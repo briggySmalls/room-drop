@@ -517,3 +517,70 @@ test.describe.serial("Email Alerts", () => {
     expect(alertsAfterFirst[0].source).toBe("Booking.com");
   });
 });
+
+test.describe.serial("Any Room Mode", () => {
+  test.beforeEach(async () => {
+    await clearTable("alerts_sent");
+    await clearTable("scan_results");
+    await clearTable("bookings");
+    await setNotificationEmail("user@example.com");
+  });
+
+  test.afterAll(async () => {
+    await clearTable("alerts_sent");
+    await clearTable("scan_results");
+    await clearTable("bookings");
+  });
+
+  test("any-room booking skips LLM and considers all rates", async () => {
+    // Mixed Rooms Hotel: CheapRooms.com at 800 (no room name), Hotels.com at 900 (Deluxe King)
+    // With room_specific=false, the 800 rate should be selected despite having no room name
+    const booking = await insertBooking({
+      hotel_name: "Mixed Rooms Hotel",
+      room_type: null,
+      room_specific: false,
+      current_price: 1200,
+      threshold_percent: 10,
+    });
+
+    const res = await triggerCron();
+    expect(res.status).toBe(200);
+
+    const scans = await getScanResults(booking.id);
+    expect(scans).toHaveLength(1);
+    expect(scans[0].scan_status).toBe("deal_found");
+    expect(Number(scans[0].best_price)).toBe(800);
+    expect(scans[0].best_source).toBe("CheapRooms.com");
+    expect(scans[0].llm_verdict).toBe("match");
+    expect(Number(scans[0].llm_confidence)).toBe(1);
+    expect(scans[0].llm_reasoning).toContain("skipped");
+    expect(scans[0].alert_triggered).toBe(true);
+
+    const alerts = await getAlertsSent(booking.id);
+    expect(alerts).toHaveLength(1);
+  });
+
+  test("specific-room booking filters out rates without room names", async () => {
+    // Mixed Rooms Hotel: CheapRooms.com at 800 (Unknown room), Hotels.com at 900 (Deluxe King)
+    // With room_specific=true, the 800 "Unknown room" rate is filtered out
+    // The 900 rate from Hotels.com should be the best deal
+    const booking = await insertBooking({
+      hotel_name: "Mixed Rooms Hotel",
+      room_type: "Deluxe King, City View",
+      room_specific: true,
+      current_price: 1200,
+      threshold_percent: 10,
+    });
+
+    const res = await triggerCron();
+    expect(res.status).toBe(200);
+
+    const scans = await getScanResults(booking.id);
+    expect(scans).toHaveLength(1);
+    expect(scans[0].scan_status).toBe("deal_found");
+    expect(Number(scans[0].best_price)).toBe(900);
+    expect(scans[0].best_source).toBe("Hotels.com");
+    expect(scans[0].best_room_desc).toBe("Deluxe King Room");
+    expect(scans[0].llm_verdict).toBe("match");
+  });
+});

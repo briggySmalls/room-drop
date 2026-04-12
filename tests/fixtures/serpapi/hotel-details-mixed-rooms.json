@@ -1,0 +1,32 @@
+{
+  "search_metadata": { "status": "Success" },
+  "name": "Mixed Rooms Hotel",
+  "prices": [
+    {
+      "source": "CheapRooms.com",
+      "link": "https://www.cheaprooms.com/mixed-rooms-hotel",
+      "total_rate": {
+        "lowest": "£800",
+        "extracted_lowest": 800
+      }
+    },
+    {
+      "source": "Hotels.com",
+      "link": "https://www.hotels.com/mixed-rooms-hotel",
+      "rooms": [
+        {
+          "name": "Deluxe King Room",
+          "link": "https://www.hotels.com/mixed-rooms-hotel",
+          "total_rate": {
+            "lowest": "£900",
+            "extracted_lowest": 900
+          }
+        }
+      ],
+      "total_rate": {
+        "lowest": "£900",
+        "extracted_lowest": 900
+      }
+    }
+  ]
+}
