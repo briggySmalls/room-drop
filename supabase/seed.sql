@@ -10,7 +10,7 @@ insert into bookings (
   hotel_name, hotel_location, check_in_date, check_out_date,
   room_type, num_guests, current_price, currency,
   cancellation_date, original_booking_source, original_confirmation,
-  threshold_percent, non_refundable_window_days, status
+  threshold_percent, non_refundable_window_days, room_specific, status
 ) values
   (
     'The Ritz London', 'London, UK',
@@ -18,7 +18,7 @@ insert into bookings (
     'Deluxe King, City View', 2, 3100.00, 'GBP',
     current_date + interval '55 days',
     'Booking.com', 'BC-9283746',
-    10, 3, 'active'
+    10, 3, true, 'active'
   ),
   (
     'Hotel Marylebone', 'London, UK',
@@ -26,13 +26,13 @@ insert into bookings (
     'Superior Double Room', 2, 450.00, 'GBP',
     current_date + interval '25 days',
     'Expedia', 'EX-1122334',
-    15, 5, 'active'
+    15, 5, true, 'active'
   ),
   (
     'The Savoy', 'London, UK',
     current_date + interval '14 days', current_date + interval '16 days',
-    'Fairmont King Room', 2, 1450.00, 'GBP',
+    null, 2, 1450.00, 'GBP',
     current_date + interval '2 days',
     'Hotels.com', 'HC-5566778',
-    5, 3, 'active'
+    5, 3, false, 'active'
   );
