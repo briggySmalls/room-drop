@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { bookingSchema, type BookingFormValues } from "@/lib/schemas/booking";
 import { Button } from "@/components/ui/button";
@@ -137,7 +138,15 @@ export default function NewBooking() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Add Booking</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Add Booking</h1>
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          Cancel
+        </Link>
+      </div>
 
       <div className="mb-6">
         <p className="text-sm text-muted-foreground">
