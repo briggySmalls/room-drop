@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/db";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
 import { searchHotelPrices } from "@/lib/scraper";
 import { compareRooms } from "@/lib/llm";
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const supabase = getSupabase();
+  const supabase = createAdminClient();
 
   // Expire bookings past their cancellation date
   const { data: expired } = await supabase
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 }
 
 async function processBooking(
-  supabase: ReturnType<typeof getSupabase>,
+  supabase: ReturnType<typeof createAdminClient>,
   booking: Booking,
 ) {
   const daysUntilCancellation = Math.ceil(
@@ -226,7 +226,7 @@ async function processBooking(
 }
 
 async function sendAlertEmail(
-  supabase: ReturnType<typeof getSupabase>,
+  supabase: ReturnType<typeof createAdminClient>,
   booking: Booking,
   scanResult: { id: string },
   bestRate: {

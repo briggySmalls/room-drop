@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 import { bookingSchema } from "@/lib/schemas/booking";
 
 export async function GET() {
-  const supabase = getSupabase();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ errors }, { status: 400 });
   }
 
-  const supabase = getSupabase();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("bookings")
     .insert(result.data)
