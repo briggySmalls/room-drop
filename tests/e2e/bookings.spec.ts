@@ -271,4 +271,59 @@ test.describe.serial("Booking Ingestion", () => {
     await expect(page.getByText("The Ritz London")).toBeVisible();
     await expect(page.getByText("Hotel Marylebone")).not.toBeVisible();
   });
+
+  test("dashboard rows link to booking detail", async ({ page }) => {
+    const [inserted] = await insertBooking({
+      hotel_name: "Clickable Hotel",
+    });
+
+    await page.goto("/");
+    await page.getByText("Clickable Hotel").click();
+    await expect(page).toHaveURL(`/bookings/${inserted.id}`);
+  });
+
+  test("edit an existing booking", async ({ page }) => {
+    const [inserted] = await insertBooking({
+      hotel_name: "Original Hotel",
+      room_specific: true,
+      room_type: "Deluxe King",
+    });
+
+    // Navigate to detail page, click Edit
+    await page.goto(`/bookings/${inserted.id}`);
+    await page.getByRole("link", { name: "Edit" }).click();
+    await expect(page).toHaveURL(`/bookings/${inserted.id}/edit`);
+
+    // Verify form is pre-filled
+    await expect(page.getByLabel("Hotel Name")).toHaveValue("Original Hotel");
+    await expect(page.getByRole("tab", { name: "Specific" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(
+      page.getByRole("textbox", { name: "Room Name" }),
+    ).toHaveValue("Deluxe King");
+
+    // Modify the hotel name
+    await page.getByLabel("Hotel Name").clear();
+    await page.getByLabel("Hotel Name").fill("Updated Hotel");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 2: skip
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+
+    // Step 3: submit
+    await page.getByRole("button", { name: "Save Changes" }).click();
+
+    // Redirects to detail page
+    await expect(page).toHaveURL(`/bookings/${inserted.id}`);
+    await expect(page.getByText("Updated Hotel")).toBeVisible();
+
+    // Verify in DB
+    const bookings = await getBookings();
+    const updated = bookings.find(
+      (b: { id: string }) => b.id === inserted.id,
+    );
+    expect(updated.hotel_name).toBe("Updated Hotel");
+  });
 });

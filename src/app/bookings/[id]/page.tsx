@@ -60,9 +60,17 @@ export default function BookingDetail() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        &larr; Back to dashboard
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/" className="text-sm text-gray-500 hover:underline">
+          &larr; Back to dashboard
+        </Link>
+        <Link
+          href={`/bookings/${params.id}/edit`}
+          className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+        >
+          Edit
+        </Link>
+      </div>
 
       <h1 className="mt-4 text-2xl font-bold">{booking.hotel_name}</h1>
       {booking.hotel_location && (

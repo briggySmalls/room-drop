@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Booking } from "@/lib/types";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +55,11 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {bookings.map((b) => (
-                <tr key={b.id} className="border-b">
+                <tr
+                  key={b.id}
+                  className="cursor-pointer border-b hover:bg-gray-50"
+                  onClick={() => router.push(`/bookings/${b.id}`)}
+                >
                   <td className="py-3 pr-4 font-medium">{b.hotel_name}</td>
                   <td className="py-3 pr-4 text-gray-600">
                     {b.check_in_date} → {b.check_out_date}
