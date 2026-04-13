@@ -13,6 +13,9 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    console.error("Auth callback failed:", error.message);
+  } else {
+    console.error("Auth callback: no code parameter in URL");
   }
 
   return NextResponse.redirect(
