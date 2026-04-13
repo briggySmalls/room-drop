@@ -38,6 +38,9 @@ export const env = {
   get resendFromEmail() {
     return required("RESEND_FROM_EMAIL");
   },
+  get supabaseServiceRoleKey() {
+    return required("SUPABASE_SERVICE_ROLE_KEY");
+  },
   get cronSecret() {
     return optional("CRON_SECRET");
   },
