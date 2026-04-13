@@ -3,7 +3,7 @@
 -- When room_specific = true (default), only rates with known room descriptions
 -- are evaluated and room_type must be set.
 
-ALTER TABLE bookings ADD COLUMN room_specific boolean NOT NULL DEFAULT true;
+ALTER TABLE bookings ADD COLUMN room_specific boolean NOT NULL DEFAULT false;
 
 ALTER TABLE bookings ALTER COLUMN room_type DROP NOT NULL;
 

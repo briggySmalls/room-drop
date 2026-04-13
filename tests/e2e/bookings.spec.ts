@@ -75,6 +75,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Location").fill("London, UK");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
     await page.getByRole("textbox", { name: "Room Type" }).fill("Deluxe King, City View");
     await page.getByLabel("Number of Guests").fill("2");
     await page.getByLabel("Total Price").fill("1200.00");
@@ -104,6 +107,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Currency Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
     await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -137,6 +143,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
     await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -159,6 +168,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-18");
     await page.getByLabel("Check-out Date").fill("2026-06-15");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
     await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -180,6 +192,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
+    await page
+      .getByRole("checkbox", { name: "Match specific room type" })
+      .click();
     await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
@@ -209,13 +224,10 @@ test.describe.serial("Booking Ingestion", () => {
   test("create a booking with any-room mode", async ({ page }) => {
     await page.goto("/bookings/new");
 
-    // Step 1: uncheck room-specific matching
+    // Step 1: checkbox defaults to unchecked (any-room mode)
     await page.getByLabel("Hotel Name").fill("Any Room Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
-    await page
-      .getByRole("checkbox", { name: "Match specific room type" })
-      .click();
     await page.getByLabel("Total Price").fill("800");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
     await page.getByRole("button", { name: "Next", exact: true }).click();

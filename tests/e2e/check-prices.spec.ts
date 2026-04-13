@@ -34,6 +34,7 @@ async function insertBooking(overrides: Record<string, unknown> = {}) {
     original_booking_source: "Booking.com",
     original_confirmation: "BC-9283746",
     threshold_percent: 10,
+    room_specific: true,
     status: "active",
     ...overrides,
   };

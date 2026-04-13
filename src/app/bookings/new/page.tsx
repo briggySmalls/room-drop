@@ -51,7 +51,7 @@ export default function NewBooking() {
   );
 
   const [currency, setCurrency] = useState("GBP");
-  const [roomSpecific, setRoomSpecific] = useState(true);
+  const [roomSpecific, setRoomSpecific] = useState(false);
 
   const {
     register,
@@ -68,7 +68,7 @@ export default function NewBooking() {
       num_guests: 2,
       non_refundable_window_days: 3,
       threshold_percent: 10,
-      room_specific: true,
+      room_specific: false,
     },
   });
 

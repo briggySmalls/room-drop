@@ -6,7 +6,7 @@ export const bookingFields = z.object({
   check_in_date: z.string().min(1, "Check-in date is required"),
   check_out_date: z.string().min(1, "Check-out date is required"),
   room_type: z.string().trim().nullable().optional(),
-  room_specific: z.boolean().optional().default(true),
+  room_specific: z.boolean().optional().default(false),
   num_guests: z.number().int().positive().optional().default(2),
   current_price: z.number().positive("Price must be a positive number"),
   currency: z.string().optional().default("GBP"),
