@@ -1,12 +1,20 @@
 import { test, expect } from "@playwright/test";
+import * as fs from "fs";
+import * as path from "path";
 
 test.describe.configure({ mode: "serial" });
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
-const SUPABASE_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+const SUPABASE_SERVICE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+
+function getTestUserId(): string {
+  const testUserPath = path.join(__dirname, "..", ".auth", "test-user.json");
+  const data = JSON.parse(fs.readFileSync(testUserPath, "utf-8"));
+  return data.id;
+}
 
 const CRON_SECRET = "test-cron-secret";
 
@@ -14,14 +22,15 @@ async function clearTable(table: string) {
   await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=not.is.null`, {
     method: "DELETE",
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     },
   });
 }
 
 async function insertBooking(overrides: Record<string, unknown> = {}) {
   const booking = {
+    user_id: getTestUserId(),
     hotel_name: "The Ritz London",
     hotel_location: "London, UK",
     check_in_date: "2026-06-15",
@@ -42,8 +51,8 @@ async function insertBooking(overrides: Record<string, unknown> = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
     method: "POST",
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       "Content-Type": "application/json",
       Prefer: "return=representation",
     },
@@ -60,8 +69,8 @@ async function getScanResults(bookingId?: string) {
     `${SUPABASE_URL}/rest/v1/scan_results?select=*${filter}`,
     {
       headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       },
     },
   );
@@ -71,8 +80,8 @@ async function getScanResults(bookingId?: string) {
 async function getBooking(id: string) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     },
   });
   const data = await res.json();
@@ -85,24 +94,12 @@ async function getAlertsSent(bookingId?: string) {
     `${SUPABASE_URL}/rest/v1/alerts_sent?select=*${filter}&order=sent_at.asc`,
     {
       headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       },
     },
   );
   return res.json();
-}
-
-async function setNotificationEmail(email: string) {
-  await fetch(`${SUPABASE_URL}/rest/v1/app_config?id=eq.1`, {
-    method: "PATCH",
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ notification_email: email }),
-  });
 }
 
 const TEST_BASE_URL = "http://localhost:3001";
@@ -339,7 +336,6 @@ test.describe.serial("Non-refundable Window", () => {
     await clearTable("alerts_sent");
     await clearTable("scan_results");
     await clearTable("bookings");
-    await setNotificationEmail("user@example.com");
   });
 
   test.afterAll(async () => {
@@ -420,7 +416,6 @@ test.describe.serial("Email Alerts", () => {
     await clearTable("alerts_sent");
     await clearTable("scan_results");
     await clearTable("bookings");
-    await setNotificationEmail("user@example.com");
   });
 
   test.afterAll(async () => {
@@ -440,7 +435,7 @@ test.describe.serial("Email Alerts", () => {
 
     const alerts = await getAlertsSent(booking.id);
     expect(alerts).toHaveLength(1);
-    expect(alerts[0].recipient_email).toBe("user@example.com");
+    expect(alerts[0].recipient_email).toBe("test@roomdrop.local");
     expect(alerts[0].source).toBe("Booking.com");
     expect(Number(alerts[0].savings_amount)).toBe(200);
     expect(alerts[0].resend_id).toBe("test-resend-id-001");
@@ -524,7 +519,6 @@ test.describe.serial("Any Room Mode", () => {
     await clearTable("alerts_sent");
     await clearTable("scan_results");
     await clearTable("bookings");
-    await setNotificationEmail("user@example.com");
   });
 
   test.afterAll(async () => {

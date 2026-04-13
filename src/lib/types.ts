@@ -13,6 +13,7 @@ export type ScanStatus =
 
 export interface Booking {
   id: string;
+  user_id: string;
   hotel_name: string;
   hotel_location: string | null;
   check_in_date: string;
@@ -51,9 +52,4 @@ export interface BookingInsert {
   threshold_percent?: number | null;
   threshold_absolute?: number | null;
   non_refundable_window_days?: number;
-}
-
-export interface AppConfig {
-  id: number;
-  notification_email: string;
 }

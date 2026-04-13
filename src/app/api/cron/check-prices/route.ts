@@ -239,15 +239,16 @@ async function sendAlertEmail(
   comparison: { reasoning: string },
   savings: { savingsAmount: number; savingsPercent: number },
 ) {
-  const { data: config } = await supabase
-    .from("app_config")
-    .select("notification_email")
-    .single();
+  const {
+    data: { user: owner },
+  } = await supabase.auth.admin.getUserById(booking.user_id);
 
-  if (!config?.notification_email) {
-    console.error("No notification email configured in app_config");
+  if (!owner?.email) {
+    console.error(`No email found for user ${booking.user_id}`);
     return;
   }
+
+  const recipientEmail = owner.email;
 
   const { subject, html } = buildDealFoundEmail({
     hotelName: booking.hotel_name,
@@ -269,7 +270,7 @@ async function sendAlertEmail(
   });
 
   const { id: resendId } = await sendEmail({
-    to: config.notification_email,
+    to: recipientEmail,
     subject,
     html,
   });
@@ -277,7 +278,7 @@ async function sendAlertEmail(
   await supabase.from("alerts_sent").insert({
     booking_id: booking.id,
     scan_result_id: scanResult.id,
-    recipient_email: config.notification_email,
+    recipient_email: recipientEmail,
     source: bestRate.source,
     savings_amount: savings.savingsAmount,
     savings_percent: savings.savingsPercent,

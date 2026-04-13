@@ -13,8 +13,8 @@
     "test:ui": "playwright test --ui",
     "db:reset": "supabase db reset",
     "cron": "bash scripts/cron.sh",
-    "set-email": "bash scripts/set-email.sh",
-    "setup": "bash scripts/setup.sh"
+    "setup": "bash scripts/setup.sh",
+    "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.88.0",

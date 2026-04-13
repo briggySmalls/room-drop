@@ -1,23 +1,32 @@
 import { test, expect } from "@playwright/test";
+import * as fs from "fs";
+import * as path from "path";
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
-const SUPABASE_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+const SUPABASE_SERVICE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+
+function getTestUserId(): string {
+  const testUserPath = path.join(__dirname, "..", ".auth", "test-user.json");
+  const data = JSON.parse(fs.readFileSync(testUserPath, "utf-8"));
+  return data.id;
+}
 
 async function clearBookings() {
   await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=not.is.null`, {
     method: "DELETE",
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     },
   });
 }
 
 async function insertBooking(overrides: Record<string, unknown> = {}) {
   const booking = {
+    user_id: getTestUserId(),
     hotel_name: "The Ritz London",
     hotel_location: "London, UK",
     check_in_date: "2026-06-15",
@@ -37,8 +46,8 @@ async function insertBooking(overrides: Record<string, unknown> = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
     method: "POST",
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       "Content-Type": "application/json",
       Prefer: "return=representation",
     },
@@ -51,8 +60,8 @@ async function insertBooking(overrides: Record<string, unknown> = {}) {
 async function getBookings() {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings?select=*`, {
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     },
   });
   return res.json();
@@ -78,7 +87,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page
       .getByRole("checkbox", { name: "Match specific room type" })
       .click();
-    await page.getByRole("textbox", { name: "Room Type" }).fill("Deluxe King, City View");
+    await page
+      .getByRole("textbox", { name: "Room Type" })
+      .fill("Deluxe King, City View");
     await page.getByLabel("Number of Guests").fill("2");
     await page.getByLabel("Total Price").fill("1200.00");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
