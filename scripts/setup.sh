@@ -72,7 +72,7 @@ npm install
 if [ ! -f .env.local ]; then
   warn "No .env.local found — copying from .env.example"
   cp .env.example .env.local
-  echo "  Edit .env.local with your keys before running the app."
+  echo "  Edit .env.local with your API keys (SerpAPI, Anthropic, Resend) before running the app."
 fi
 
 # Start local Supabase
@@ -84,6 +84,25 @@ supabase start
 echo ""
 echo "Applying database migrations..."
 supabase db push
+
+# Inject Supabase keys into .env.local
+echo ""
+echo "Updating .env.local with local Supabase keys..."
+eval "$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+
+update_env() {
+  local key="$1" value="$2"
+  if grep -q "^${key}=" .env.local; then
+    sed -i '' "s|^${key}=.*|${key}=${value}|" .env.local
+  else
+    echo "${key}=${value}" >> .env.local
+  fi
+}
+
+update_env "NEXT_PUBLIC_SUPABASE_URL" "$API_URL"
+update_env "NEXT_PUBLIC_SUPABASE_ANON_KEY" "$ANON_KEY"
+update_env "SUPABASE_SERVICE_ROLE_KEY" "$SERVICE_ROLE_KEY"
+ok "Supabase keys written to .env.local"
 
 echo ""
 echo -e "${GREEN}Setup complete.${NC} Run 'npm run dev' to start the app."
