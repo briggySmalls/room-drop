@@ -29,19 +29,30 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 
 ### Supabase
 
-| Variable                        | Description                        |
-| ------------------------------- | ---------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL          |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous/public key |
+| Variable                        | Description                         |
+| ------------------------------- | ----------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL           |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous/public key  |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Service role key (server-side only) |
 
 For local development, `npm run setup` starts a local Supabase instance. The default values are:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<printed by supabase start>
+SUPABASE_SERVICE_ROLE_KEY=<printed by supabase start>
 ```
 
-For production, create a project at [supabase.com](https://supabase.com) and copy the URL and anon key from **Settings → API**.
+For production, create a project at [supabase.com](https://supabase.com) and copy the keys from **Settings → API**.
+
+### Google OAuth
+
+| Variable               | Description                    |
+| ---------------------- | ------------------------------ |
+| `GOOGLE_CLIENT_ID`     | Google OAuth 2.0 client ID     |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 client secret |
+
+Only needed for local development (production OAuth is configured in the Supabase dashboard). Create credentials at [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials).
 
 ### SerpAPI (Google Hotels)
 
@@ -78,13 +89,7 @@ npm run cron
 | `RESEND_API_KEY`    | Your Resend API key           |
 | `RESEND_FROM_EMAIL` | Verified sender email address |
 
-Sign up at [resend.com](https://resend.com). Create an API key under **API Keys** in the dashboard. To send from a custom address, verify a domain under **Domains** — or use `onboarding@resend.dev` for testing.
-
-Set the recipient email for alerts:
-
-```bash
-npm run set-email -- you@example.com
-```
+Sign up at [resend.com](https://resend.com). Create an API key under **API Keys** in the dashboard. To send from a custom address, verify a domain under **Domains** — or use `onboarding@resend.dev` for testing. Alert emails are sent to the booking owner's email (from their auth profile).
 
 ## Code Quality
 
@@ -104,6 +109,47 @@ npx playwright test --ui         # Interactive Playwright UI
 ```
 
 Playwright starts the Next.js dev server automatically. MSW intercepts external API calls inside the server process when `NODE_ENV=test`.
+
+## Deployment
+
+Prerequisites: [Supabase CLI](https://supabase.com/docs/guides/cli), [Vercel CLI](https://vercel.com/docs/cli).
+
+### Automated setup
+
+The deploy script handles Supabase migration push, Vercel env vars, and production deploy:
+
+```bash
+supabase login     # one-time
+vercel login       # one-time
+npm run deploy
+```
+
+The script will:
+
+1. Link your Supabase project and push migrations
+2. Prompt for production Supabase keys (from dashboard → Settings → API)
+3. Read external API keys from `.env.local` (SERPAPI, Anthropic, Resend)
+4. Generate a `CRON_SECRET` automatically
+5. Deploy to Vercel
+
+### Manual steps
+
+Google OAuth cannot be configured via CLI. After deploying:
+
+1. **Google Cloud Console** → APIs & Services → Credentials
+   - Create an OAuth 2.0 Client ID (Web application)
+   - Add authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
+
+2. **Supabase Dashboard** → Authentication → Providers → Google
+   - Enable the provider and paste the Client ID + Secret from step 1
+
+3. **Supabase Dashboard** → Authentication → URL Configuration
+   - Set **Site URL** to your Vercel deployment URL
+   - Add `https://<your-vercel-domain>/auth/callback` to **Redirect URLs**
+
+### Cron
+
+Vercel runs the price check cron daily at 6am UTC (configured in `vercel.json`). The `CRON_SECRET` set by the deploy script authenticates these requests.
 
 ## Tech Stack
 
