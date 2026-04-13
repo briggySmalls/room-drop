@@ -84,11 +84,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Location").fill("London, UK");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
+    await page.getByRole("tab", { name: "Specific" }).click();
     await page
-      .getByRole("checkbox", { name: "Match specific room type" })
-      .click();
-    await page
-      .getByRole("textbox", { name: "Room Type" })
+      .getByRole("textbox", { name: "Room Name" })
       .fill("Deluxe King, City View");
     await page.getByLabel("Number of Guests").fill("2");
     await page.getByLabel("Total Price").fill("1200.00");
@@ -119,9 +117,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
     await page
-      .getByRole("checkbox", { name: "Match specific room type" })
+      .getByRole("tab", { name: "Specific" })
       .click();
-    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
+    await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
 
@@ -155,9 +153,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
     await page
-      .getByRole("checkbox", { name: "Match specific room type" })
+      .getByRole("tab", { name: "Specific" })
       .click();
-    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
+    await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
     await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -180,9 +178,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Check-in Date").fill("2026-06-18");
     await page.getByLabel("Check-out Date").fill("2026-06-15");
     await page
-      .getByRole("checkbox", { name: "Match specific room type" })
+      .getByRole("tab", { name: "Specific" })
       .click();
-    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
+    await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
 
@@ -204,9 +202,9 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
     await page
-      .getByRole("checkbox", { name: "Match specific room type" })
+      .getByRole("tab", { name: "Specific" })
       .click();
-    await page.getByRole("textbox", { name: "Room Type" }).fill("Standard");
+    await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
     await page.getByRole("button", { name: "Next", exact: true }).click();

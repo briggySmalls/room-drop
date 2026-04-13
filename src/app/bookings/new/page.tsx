@@ -18,13 +18,11 @@ import {
 } from "@/components/ui/combobox";
 import {
   Field,
-  FieldContent,
   FieldLabel,
   FieldError,
   FieldDescription,
 } from "@/components/ui/field";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { currencies } from "@/lib/currencies";
 
@@ -208,40 +206,39 @@ export default function NewBooking() {
               </Field>
             </div>
 
-            <Field orientation="horizontal">
-              <Checkbox
-                id="room_specific"
-                checked={roomSpecific}
-                onCheckedChange={(checked) => {
-                  const value = Boolean(checked);
-                  setRoomSpecific(value);
-                  setValue("room_specific", value);
-                  if (!value) {
+            <Field>
+              <FieldLabel>Room Type</FieldLabel>
+              <FieldDescription>
+                {roomSpecific
+                  ? "Only rates with a matching room type will be compared"
+                  : "All rates considered regardless of room type"}
+              </FieldDescription>
+              <Tabs
+                value={roomSpecific ? "specific" : "any"}
+                onValueChange={(value) => {
+                  const isSpecific = value === "specific";
+                  setRoomSpecific(isSpecific);
+                  setValue("room_specific", isSpecific);
+                  if (!isSpecific) {
                     setValue("room_type", null);
                   }
                 }}
-              />
-              <FieldContent>
-                <FieldLabel htmlFor="room_specific">
-                  Match specific room type
-                </FieldLabel>
-                <FieldDescription>
-                  {roomSpecific
-                    ? "Only rates with a known room type will be compared"
-                    : "All rates considered regardless of room type — more results, but you may be alerted about a different room"}
-                </FieldDescription>
-              </FieldContent>
+              >
+                <TabsList>
+                  <TabsTrigger value="any">Any</TabsTrigger>
+                  <TabsTrigger value="specific">Specific</TabsTrigger>
+                </TabsList>
+              </Tabs>
+              {roomSpecific && (
+                <Field data-invalid={errors.room_type ? true : undefined}>
+                  <FieldLabel htmlFor="room_type">Room Name</FieldLabel>
+                  <Input id="room_type" {...register("room_type")} />
+                  {errors.room_type && (
+                    <FieldError>{errors.room_type.message}</FieldError>
+                  )}
+                </Field>
+              )}
             </Field>
-
-            {roomSpecific && (
-              <Field data-invalid={errors.room_type ? true : undefined}>
-                <FieldLabel htmlFor="room_type">Room Type</FieldLabel>
-                <Input id="room_type" {...register("room_type")} />
-                {errors.room_type && (
-                  <FieldError>{errors.room_type.message}</FieldError>
-                )}
-              </Field>
-            )}
 
             <div className="grid grid-cols-3 gap-4">
               <Field data-invalid={errors.num_guests ? true : undefined}>
