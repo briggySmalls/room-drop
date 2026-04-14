@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { SignOutButton } from "@/components/sign-out-button";
+import { AppHeader } from "@/components/app-header";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -19,9 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className="antialiased">
-        <header className="flex items-center justify-end px-4 py-2">
-          <SignOutButton />
-        </header>
+        <AppHeader />
         {children}
       </body>
     </html>
