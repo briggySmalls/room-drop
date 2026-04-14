@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Booking, FilterMode, RoomVerdict, ScanStatus } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 
 interface ScanResult {
   id: string;
@@ -30,7 +31,7 @@ const SCAN_STATUS_LABELS: Record<ScanStatus, string> = {
 
 const SCAN_STATUS_COLORS: Record<ScanStatus, string> = {
   deal_found: "text-green-600",
-  no_cheaper_rates: "text-gray-500",
+  no_cheaper_rates: "text-muted-foreground",
   no_eligible_rates: "text-yellow-600",
   no_rates_parsed: "text-orange-600",
   no_property_found: "text-red-600",
@@ -55,8 +56,9 @@ export default function BookingDetail() {
     load();
   }, [params.id]);
 
-  if (loading) return <p className="p-8 text-gray-500">Loading...</p>;
-  if (!booking) return <p className="p-8 text-gray-500">Booking not found.</p>;
+  if (loading) return <p className="p-8 text-muted-foreground">Loading...</p>;
+  if (!booking)
+    return <p className="p-8 text-muted-foreground">Booking not found.</p>;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
@@ -67,38 +69,35 @@ export default function BookingDetail() {
         >
           &larr; Back to dashboard
         </Link>
-        <Link
-          href={`/bookings/${params.id}/edit`}
-          className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-        >
+        <Button render={<Link href={`/bookings/${params.id}/edit`} />}>
           Edit
-        </Link>
+        </Button>
       </div>
 
       <h1 className="mt-4 text-2xl font-bold">{booking.hotel_name}</h1>
       {booking.hotel_location && (
-        <p className="text-gray-600">{booking.hotel_location}</p>
+        <p className="text-muted-foreground">{booking.hotel_location}</p>
       )}
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
         <div>
-          <span className="text-gray-500">Dates</span>
+          <span className="text-muted-foreground">Dates</span>
           <p>
             {booking.check_in_date} → {booking.check_out_date}
           </p>
         </div>
         <div>
-          <span className="text-gray-500">Room</span>
+          <span className="text-muted-foreground">Room</span>
           <p>{booking.room_type ?? "Any room"}</p>
         </div>
         <div>
-          <span className="text-gray-500">Price</span>
+          <span className="text-muted-foreground">Price</span>
           <p>
             {booking.currency} {Number(booking.current_price).toFixed(2)}
           </p>
         </div>
         <div>
-          <span className="text-gray-500">Status</span>
+          <span className="text-muted-foreground">Status</span>
           <p>
             <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
               {booking.status}
@@ -110,11 +109,11 @@ export default function BookingDetail() {
       <h2 className="mt-8 text-lg font-semibold">Scan History</h2>
 
       {scans.length === 0 ? (
-        <p className="mt-2 text-sm text-gray-500">No scans yet.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No scans yet.</p>
       ) : (
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b text-xs uppercase text-gray-500">
+            <thead className="border-b text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="pb-2 pr-4">Date</th>
                 <th className="pb-2 pr-4">Status</th>
@@ -128,7 +127,7 @@ export default function BookingDetail() {
             <tbody>
               {scans.map((s) => (
                 <tr key={s.id} className="border-b">
-                  <td className="py-2 pr-4 text-gray-600">
+                  <td className="py-2 pr-4 text-muted-foreground">
                     {new Date(s.scanned_at).toLocaleDateString()}
                   </td>
                   <td className="py-2 pr-4">
@@ -141,7 +140,7 @@ export default function BookingDetail() {
                       ? `£${Number(s.best_price).toFixed(2)}`
                       : "—"}
                   </td>
-                  <td className="py-2 pr-4 text-gray-600">
+                  <td className="py-2 pr-4 text-muted-foreground">
                     {s.best_source ?? "—"}
                   </td>
                   <td className="py-2 pr-4">

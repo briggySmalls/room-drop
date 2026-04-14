@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Booking } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -22,21 +23,18 @@ export default function Dashboard() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">RoomDrop</h1>
-        <Link
-          href="/bookings/new"
-          className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-        >
+        <h1 className="text-2xl font-bold">Your Bookings</h1>
+        <Button variant="accent" render={<Link href="/bookings/new" />}>
           Add Booking
-        </Link>
+        </Button>
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted-foreground">Loading...</p>
       ) : bookings.length === 0 ? (
-        <p className="text-gray-500">
+        <p className="text-muted-foreground">
           No active bookings.{" "}
-          <Link href="/bookings/new" className="underline">
+          <Link href="/bookings/new" className="text-primary underline">
             Add one
           </Link>{" "}
           to start monitoring prices.
@@ -44,7 +42,7 @@ export default function Dashboard() {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b text-xs uppercase text-gray-500">
+            <thead className="border-b text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="pb-2 pr-4">Hotel</th>
                 <th className="pb-2 pr-4">Dates</th>
@@ -57,14 +55,14 @@ export default function Dashboard() {
               {bookings.map((b) => (
                 <tr
                   key={b.id}
-                  className="cursor-pointer border-b hover:bg-gray-50"
+                  className="cursor-pointer border-b hover:bg-muted"
                   onClick={() => router.push(`/bookings/${b.id}`)}
                 >
                   <td className="py-3 pr-4 font-medium">{b.hotel_name}</td>
-                  <td className="py-3 pr-4 text-gray-600">
+                  <td className="py-3 pr-4 text-muted-foreground">
                     {b.check_in_date} → {b.check_out_date}
                   </td>
-                  <td className="py-3 pr-4 text-gray-600">
+                  <td className="py-3 pr-4 text-muted-foreground">
                     {b.room_type ?? "Any room"}
                   </td>
                   <td className="py-3 pr-4">
