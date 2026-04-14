@@ -136,7 +136,7 @@ export function buildDealFoundEmail(params: DealEmailParams): {
     <tr>
       <td style="padding-top: 24px; border-top: 1px solid #e5e7eb;">
         <p style="margin: 0; font-size: 12px; color: #9ca3af;">
-          Sent by Room Drop
+          Sent by RoomDrop
         </p>
       </td>
     </tr>

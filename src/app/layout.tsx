@@ -7,7 +7,7 @@ import { SignOutButton } from "@/components/sign-out-button";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Room Drop",
+  title: "RoomDrop",
   description: "Monitor hotel prices after booking and catch price drops",
 };
 

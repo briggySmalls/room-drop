@@ -22,7 +22,7 @@ export default function Dashboard() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Room Drop</h1>
+        <h1 className="text-2xl font-bold">RoomDrop</h1>
         <Link
           href="/bookings/new"
           className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
