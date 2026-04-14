@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Booking, FilterMode, RoomVerdict, ScanStatus } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ScanResult {
   id: string;
@@ -69,9 +70,12 @@ export default function BookingDetail() {
         >
           &larr; Back to dashboard
         </Link>
-        <Button render={<Link href={`/bookings/${params.id}/edit`} />}>
+        <Link
+          href={`/bookings/${params.id}/edit`}
+          className={cn(buttonVariants())}
+        >
           Edit
-        </Button>
+        </Link>
       </div>
 
       <h1 className="mt-4 text-2xl font-bold">{booking.hotel_name}</h1>

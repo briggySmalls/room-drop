@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Booking } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -24,9 +25,12 @@ export default function Dashboard() {
     <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Your Bookings</h1>
-        <Button variant="accent" render={<Link href="/bookings/new" />}>
+        <Link
+          href="/bookings/new"
+          className={cn(buttonVariants({ variant: "accent" }))}
+        >
           Add Booking
-        </Button>
+        </Link>
       </div>
 
       {loading ? (
