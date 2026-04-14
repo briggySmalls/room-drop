@@ -48,10 +48,11 @@ interface BookingFormProps {
   bookingId?: string;
 }
 
-function deriveThresholdMode(
-  booking?: Booking,
-): "percentage" | "absolute" {
-  if (booking?.threshold_absolute != null && booking.threshold_percent == null) {
+function deriveThresholdMode(booking?: Booking): "percentage" | "absolute" {
+  if (
+    booking?.threshold_absolute != null &&
+    booking.threshold_percent == null
+  ) {
     return "absolute";
   }
   return "percentage";
@@ -89,7 +90,11 @@ function deriveDefaults(booking?: Booking): Partial<BookingFormValues> {
   };
 }
 
-export function BookingForm({ mode, initialData, bookingId }: BookingFormProps) {
+export function BookingForm({
+  mode,
+  initialData,
+  bookingId,
+}: BookingFormProps) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -190,15 +195,13 @@ export function BookingForm({ mode, initialData, bookingId }: BookingFormProps) 
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <Link
-          href={cancelHref}
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          Cancel
-        </Link>
-      </div>
+      <Link
+        href={cancelHref}
+        className="text-sm text-muted-foreground hover:text-primary"
+      >
+        &larr; Back
+      </Link>
+      <h1 className="mt-2 mb-6 text-2xl font-bold">{title}</h1>
 
       <div className="mb-6">
         <p className="text-sm text-muted-foreground">
@@ -351,9 +354,7 @@ export function BookingForm({ mode, initialData, bookingId }: BookingFormProps) 
                     <ComboboxList>
                       <ComboboxCollection>
                         {(code: string) => {
-                          const c = currencies.find(
-                            (cur) => cur.code === code,
-                          );
+                          const c = currencies.find((cur) => cur.code === code);
                           return (
                             <ComboboxItem key={code} value={code}>
                               {code} &mdash; {c?.name}

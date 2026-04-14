@@ -61,7 +61,10 @@ export default function BookingDetail() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm text-gray-500 hover:underline">
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground hover:text-primary"
+        >
           &larr; Back to dashboard
         </Link>
         <Link
