@@ -29,7 +29,8 @@ export const bookingSchema = bookingFields
     path: ["threshold_percent"],
   })
   .refine(
-    (data) => !data.room_specific || (data.room_type && data.room_type.length > 0),
+    (data) =>
+      !data.room_specific || (data.room_type && data.room_type.length > 0),
     {
       message: "Room type is required when room matching is enabled",
       path: ["room_type"],

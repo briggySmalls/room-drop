@@ -116,9 +116,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Currency Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
-    await page
-      .getByRole("tab", { name: "Specific" })
-      .click();
+    await page.getByRole("tab", { name: "Specific" }).click();
     await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -152,9 +150,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-15");
     await page.getByLabel("Check-out Date").fill("2026-06-18");
-    await page
-      .getByRole("tab", { name: "Specific" })
-      .click();
+    await page.getByRole("tab", { name: "Specific" }).click();
     await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -177,9 +173,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-06-18");
     await page.getByLabel("Check-out Date").fill("2026-06-15");
-    await page
-      .getByRole("tab", { name: "Specific" })
-      .click();
+    await page.getByRole("tab", { name: "Specific" }).click();
     await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-10");
@@ -201,9 +195,7 @@ test.describe.serial("Booking Ingestion", () => {
     await page.getByLabel("Hotel Name").fill("Timeline Test Hotel");
     await page.getByLabel("Check-in Date").fill("2026-07-01");
     await page.getByLabel("Check-out Date").fill("2026-07-03");
-    await page
-      .getByRole("tab", { name: "Specific" })
-      .click();
+    await page.getByRole("tab", { name: "Specific" }).click();
     await page.getByRole("textbox", { name: "Room Name" }).fill("Standard");
     await page.getByLabel("Total Price").fill("500");
     await page.getByLabel("Free Cancellation Date").fill("2026-06-28");
@@ -300,9 +292,9 @@ test.describe.serial("Booking Ingestion", () => {
       "aria-selected",
       "true",
     );
-    await expect(
-      page.getByRole("textbox", { name: "Room Name" }),
-    ).toHaveValue("Deluxe King");
+    await expect(page.getByRole("textbox", { name: "Room Name" })).toHaveValue(
+      "Deluxe King",
+    );
 
     // Modify the hotel name
     await page.getByLabel("Hotel Name").clear();
@@ -321,9 +313,7 @@ test.describe.serial("Booking Ingestion", () => {
 
     // Verify in DB
     const bookings = await getBookings();
-    const updated = bookings.find(
-      (b: { id: string }) => b.id === inserted.id,
-    );
+    const updated = bookings.find((b: { id: string }) => b.id === inserted.id);
     expect(updated.hotel_name).toBe("Updated Hotel");
   });
 });
